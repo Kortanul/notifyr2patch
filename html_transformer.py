@@ -16,7 +16,7 @@ class HtmlTransformer:
     self.string = string
 
   def unpack_nested_markup(self):
-    self.string = HtmlTransformer.NESTED_MARKUP_PATTERN.sub(r'\1', self.string)
+    self.string = self.NESTED_MARKUP_PATTERN.sub(r'\1', self.string)
 
     return self
 
@@ -31,7 +31,7 @@ class HtmlTransformer:
     return self
 
   def decode_newlines(self):
-    self.string = HtmlTransformer.NEW_LINE_PATTERN.sub('\n', self.string)
+    self.string = self.NEW_LINE_PATTERN.sub('\n', self.string)
 
     return self
 
