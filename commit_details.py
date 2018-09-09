@@ -71,7 +71,7 @@ class CommitHeader:
     if html_content is not None:
       proper_spaced = html_content.replace('<br/>', '\n')
 
-      return BeautifulSoup(proper_spaced).get_text()
+      return BeautifulSoup(proper_spaced, 'html.parser').get_text()
 
   def _parse_and_strip_text_cell(self, commit_header_row, cell_index):
     cell_text = self._parse_text_cell(commit_header_row, cell_index)
