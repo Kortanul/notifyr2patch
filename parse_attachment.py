@@ -1,7 +1,7 @@
 from notifyr_notification import NotifyrNotification
 
-# notification1 = NotifyrNotification('attachment-0001.html')
-notification1 = NotifyrNotification('attachment-0001.fuller.html')
+# notification1 = NotifyrNotification('sample_inputs/attachment-0001.html')
+notification1 = NotifyrNotification('sample_inputs/attachment-0001.fuller.html')
 
 print(notification1.details.project_name)
 print(notification1.details.project_stash_url)
