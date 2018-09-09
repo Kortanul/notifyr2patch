@@ -3,8 +3,14 @@ import html
 
 
 class HtmlTransformer:
+  NESTED_MARKUP_WRAPPER_TAG = '<tt>'
+
   NEW_LINE_PATTERN = re.compile(r'<br\s?/?>')
   NESTED_MARKUP_PATTERN = re.compile(r'^<tt>(.*)</tt>')
+
+  @classmethod
+  def contains_nested_markup(cls, html_string):
+    return html_string.startswith(cls.NESTED_MARKUP_WRAPPER_TAG)
 
   def __init__(self, string):
     self.string = string

@@ -34,7 +34,7 @@ class NotifyrNotification:
   def _extract_content(self, file):
     file_content = file.read()
 
-    if file_content.startswith('<tt>'):
+    if HtmlTransformer.contains_nested_markup(file_content):
       return self._extract_inner_content(file_content)
     else:
       return file_content
