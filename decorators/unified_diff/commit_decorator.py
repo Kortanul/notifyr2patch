@@ -7,4 +7,4 @@ class CommitDecorator:
       [FileDecorator(file) for file in commit.change_set.files]
 
   def __str__(self):
-    ''.join([str(decorator) for decorator in self.file_decorators])
+    return ''.join([str(decorator) for decorator in self.file_decorators])
