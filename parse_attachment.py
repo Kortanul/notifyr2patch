@@ -1,3 +1,6 @@
+from decorators.unified_diff.file_decorator import FileDecorator
+from decorators.unified_diff.file_hunk_decorator import FileHunkDecorator
+from decorators.unified_diff.hunk_line_decorator import HunkLineDecorator
 from parsedmodels.notifyr_notification import NotifyrNotification
 
 # notification1 = NotifyrNotification('sample_inputs/attachment-0001.html')
@@ -17,11 +20,6 @@ for commit in notification1.commits:
   print('')
 
   for file in commit.files:
-    for hunk in file.hunks:
-      for line in hunk.lines:
-        print(
-          f"{line.original_line_number} {line.new_line_number} "
-          f"{line.change_type} '{line.content}'"
-        )
+    print(FileDecorator(file))
 
   print('')

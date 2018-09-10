@@ -28,16 +28,16 @@ class HunkLine:
     self._parse_line_content(hunk_line_row)
 
   def _parse_original_line_number(self, hunk_line_row):
-    original_line_cell = self._parse_line_number(hunk_line_row, 0)
+    original_line_number = self._parse_line_number(hunk_line_row, 0)
 
-    if original_line_cell is not None:
-      self.original_line_number = original_line_cell.get_text()
+    if original_line_number is not None:
+      self.original_line_number = original_line_number
 
   def _parse_new_line_number(self, hunk_line_row):
-    new_line_cell = self._parse_line_number(hunk_line_row, 1)
+    new_line_number = self._parse_line_number(hunk_line_row, 1)
 
-    if new_line_cell is not None:
-      self.new_line_number = new_line_cell.get_text()
+    if new_line_number is not None:
+      self.new_line_number = new_line_number
 
   def _parse_change_type(self, hunk_line_row):
     marker_cell = hunk_line_row.select_one(self.MARKER_TYPE_SELECTOR)
@@ -58,4 +58,7 @@ class HunkLine:
     line_numbers = hunk_line_row.select(self.LINE_NUMBER_SELECTOR)
 
     if line_numbers is not None and len(line_numbers) > index:
-      return line_numbers[index]
+      line_number_text = line_numbers[index].get_text()
+
+      if line_number_text:
+        return int(line_number_text)
