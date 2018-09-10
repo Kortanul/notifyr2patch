@@ -48,7 +48,7 @@ class NotifyrNotification:
           .unpack_nested_markup()
           .remove_newlines()
           .decode_newlines()
-          .decode_spaces()
+          .decode_nonbreaking_spaces()
           .unescape_markup()
       )
 

@@ -2,7 +2,7 @@ from commit_file import CommitFile
 from commit_file_hunk import CommitFileHunk
 
 
-class CommitChanges:
+class CommitChangeSet:
   FILE_NAME_HEADER_STYLE = 'background: #ffffff; color: #333333'
 
   CHANGES_TABLE_CLASS = 'aui'
@@ -21,7 +21,8 @@ class CommitChanges:
       change_rows = changes_table.select('> tbody > tr')
 
       if change_rows is not None:
-        list(map(lambda row: self._parse_row(row), change_rows))
+        for row in change_rows:
+          self._parse_row(row)
 
   def _parse_row(self, row):
     if self._is_file_header_row(row):

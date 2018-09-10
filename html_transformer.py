@@ -35,8 +35,8 @@ class HtmlTransformer:
 
     return self
 
-  def decode_spaces(self):
-    self.string = self.string.replace('&nbsp;', ' ')
+  def decode_nonbreaking_spaces(self):
+    self.string = self.string.replace('&nbsp;', ' ').replace(u'\u00A0', ' ')
 
     return self
 

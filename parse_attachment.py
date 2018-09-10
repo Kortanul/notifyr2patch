@@ -14,11 +14,10 @@ print(notification1.commits[0].message)
 print(notification1.commits[0].author)
 print(notification1.commits[0].date)
 
-print(
-  ', '.join(
-    map(
-      lambda file:file.filename,
-      notification1.commits[0].changes[0].files
-    )
-  )
-)
+for file in notification1.commits[0].files:
+  for hunk in file.hunks:
+    for line in hunk.lines:
+      print(
+        f"{line.original_line_number} {line.new_line_number} "
+        f"{line.change_type} '{line.content}'"
+      )

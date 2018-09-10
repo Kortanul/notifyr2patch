@@ -1,11 +1,11 @@
-from commit_changes import CommitChanges
-from commit_details import CommitHeader
+from commit_change_set import CommitChangeSet
+from commit_header import CommitHeader
 
 
 class Commit:
   def __init__(self, commit_table):
     self.header = None
-    self.changes = None
+    self.change_set = None
 
     self._parse_commit_table(commit_table)
 
@@ -14,7 +14,16 @@ class Commit:
     changes_row = commit_table.select_one('> tbody > tr:nth-of-type(2)')
 
     self.header = CommitHeader(header_row)
-    self.changes = [CommitChanges(changes_row)]
+    self.change_set = CommitChangeSet(changes_row)
 
   def __getattr__(self, attr):
-    return getattr(self.header, attr)
+    delegates = [
+      self.header,
+      self.change_set
+    ]
+
+    for delegate in delegates:
+      if hasattr(delegate, attr):
+        return getattr(delegate, attr)
+
+    return getattr(super(), attr)
