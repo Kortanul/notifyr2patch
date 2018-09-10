@@ -1,4 +1,4 @@
-from decorators.unified_diff.commit_decorator import CommitDecorator
+from decorators.git_patch.commit_decorator import CommitDecorator
 from parsedmodels.notifyr_notification import NotifyrNotification
 
 # notification1 = NotifyrNotification('sample_inputs/attachment-0001.html')
@@ -11,10 +11,6 @@ print(notification1.details.action)
 print(notification1.details.branch_name)
 
 for commit in notification1.commits:
-  print('')
-
-  print(f'{commit.id} by {commit.author} on {commit.date}:')
-  print(commit.message)
   print('')
 
   print(CommitDecorator(commit))

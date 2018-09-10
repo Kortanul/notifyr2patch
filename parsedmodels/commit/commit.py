@@ -26,4 +26,4 @@ class Commit:
       if hasattr(delegate, attr):
         return getattr(delegate, attr)
 
-    return getattr(super(), attr)
+    return getattr(super(Commit, self), attr)

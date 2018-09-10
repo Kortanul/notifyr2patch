@@ -45,10 +45,14 @@ class FileDecorator:
     self.hunk_decorators = \
       [FileHunkDecorator(file_hunk) for file_hunk in commit_file.hunks]
 
+  @property
+  def file_name(self):
+    return self.commit_file.filename
+
   def __str__(self):
     lines = [
-      f'--- a/{self.commit_file.filename}',
-      f'+++ b/{self.commit_file.filename}',
+      f'--- a/{self.file_name}',
+      f'+++ b/{self.file_name}',
       ''.join([str(decorator) for decorator in self.hunk_decorators])
     ]
 
