@@ -6,6 +6,9 @@ from notification_details import NotificationDetails
 
 
 class NotifyrNotification:
+  COMMITS_WRAPPER_SELECTOR = '> tbody > tr:nth-of-type(2)'
+  COMMITS_TABLE_SELECTOR = '> td > table'
+
   def __init__(self, filename):
     self.details = None
 
@@ -25,11 +28,10 @@ class NotifyrNotification:
     self.details = NotificationDetails(notification_header_row)
 
   def _parse_commits(self, soup):
-    commits_row = soup.table.tr.table.select_one('> tbody > tr:nth-of-type(2)')
+    commits_row = soup.table.tr.table.select_one(self.COMMITS_WRAPPER_SELECTOR)
+    commit_tables = commits_row.select(self.COMMITS_TABLE_SELECTOR)
 
-    first_commit_table = commits_row.select_one('> td:nth-of-type(1) > table')
-
-    self.commits = [Commit(first_commit_table)]
+    self.commits = [Commit(commit_table) for commit_table in commit_tables]
 
   def _extract_content(self, file):
     file_content = file.read()

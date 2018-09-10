@@ -9,15 +9,19 @@ print(notification1.details.pusher)
 print(notification1.details.action)
 print(notification1.details.branch_name)
 
-print(notification1.commits[0].id)
-print(notification1.commits[0].message)
-print(notification1.commits[0].author)
-print(notification1.commits[0].date)
+for commit in notification1.commits:
+  print('')
 
-for file in notification1.commits[0].files:
-  for hunk in file.hunks:
-    for line in hunk.lines:
-      print(
-        f"{line.original_line_number} {line.new_line_number} "
-        f"{line.change_type} '{line.content}'"
-      )
+  print(f'{commit.id} by {commit.author} on {commit.date}:')
+  print(commit.message)
+  print('')
+
+  for file in commit.files:
+    for hunk in file.hunks:
+      for line in hunk.lines:
+        print(
+          f"{line.original_line_number} {line.new_line_number} "
+          f"{line.change_type} '{line.content}'"
+        )
+
+  print('')
