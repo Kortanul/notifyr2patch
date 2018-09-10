@@ -1,4 +1,4 @@
-from notifyr_notification import NotifyrNotification
+from parsedmodels.notifyr_notification import NotifyrNotification
 
 # notification1 = NotifyrNotification('sample_inputs/attachment-0001.html')
 notification1 = NotifyrNotification('sample_inputs/attachment-0001.fuller.html')

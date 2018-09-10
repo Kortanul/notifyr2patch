@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 
-from commit import Commit
-from html_transformer import HtmlTransformer
-from notification_details import NotificationDetails
+from parsedmodels.commit.commit import Commit
+from parsedmodels.html_transformer import HtmlTransformer
+from parsedmodels.notification_details import NotificationDetails
 
 
 class NotifyrNotification:

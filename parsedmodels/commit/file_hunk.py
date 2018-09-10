@@ -1,7 +1,7 @@
-from hunk_line import HunkLine
+from parsedmodels.commit.hunk_line import HunkLine
 
 
-class CommitFileHunk:
+class FileHunk:
   def __init__(self, hunk_tables):
     self.lines = []
   

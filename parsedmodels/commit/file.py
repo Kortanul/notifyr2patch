@@ -1,7 +1,7 @@
 import re
 
 
-class CommitFile:
+class File:
   FILENAME_PATTERN = \
     re.compile(
       r'<a[^>]*href=".+/commits/[a-zA-z0-9]+#(?P<filename>[^"]+)"[^>]*>'

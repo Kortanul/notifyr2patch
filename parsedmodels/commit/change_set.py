@@ -1,8 +1,8 @@
-from commit_file import CommitFile
-from commit_file_hunk import CommitFileHunk
+from parsedmodels.commit.file import File
+from parsedmodels.commit.file_hunk import FileHunk
 
 
-class CommitChangeSet:
+class ChangeSet:
   FILE_NAME_HEADER_STYLE = 'background: #ffffff; color: #333333'
 
   CHANGES_TABLE_CLASS = 'aui'
@@ -37,7 +37,7 @@ class CommitChangeSet:
       )
 
   def _parse_file_header(self, row):
-    self.files.append(CommitFile(row))
+    self.files.append(File(row))
 
   def _parse_hunks(self, hunk_container_row):
     current_file = self._current_file
@@ -46,7 +46,7 @@ class CommitChangeSet:
       hunk_tables = \
         hunk_container_row.find_all('table', self.SEGMENT_LINES_TABLE_CLASS)
 
-      current_file.add_hunk(CommitFileHunk(hunk_tables))
+      current_file.add_hunk(FileHunk(hunk_tables))
 
     else:
       raise RuntimeError(

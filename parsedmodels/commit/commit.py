@@ -1,5 +1,5 @@
-from commit_change_set import CommitChangeSet
-from commit_header import CommitHeader
+from parsedmodels.commit.change_set import ChangeSet
+from parsedmodels.commit.commit_header import CommitHeader
 
 
 class Commit:
@@ -14,7 +14,7 @@ class Commit:
     changes_row = commit_table.select_one('> tbody > tr:nth-of-type(2)')
 
     self.header = CommitHeader(header_row)
-    self.change_set = CommitChangeSet(changes_row)
+    self.change_set = ChangeSet(changes_row)
 
   def __getattr__(self, attr):
     delegates = [

@@ -1,6 +1,6 @@
 from enum import Enum
 
-from html_transformer import HtmlTransformer
+from parsedmodels.html_transformer import HtmlTransformer
 
 
 class ChangeType(Enum):
