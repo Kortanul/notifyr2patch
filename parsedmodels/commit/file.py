@@ -2,6 +2,8 @@ import re
 
 
 class File:
+  VIEW_CHANGES_CELL_SELECTOR = '> td:nth-of-type(2)'
+
   FILENAME_PATTERN = \
     re.compile(
       r'<a[^>]*href=".+/commits/[a-zA-z0-9]+#(?P<filename>[^"]+)"[^>]*>'
@@ -18,7 +20,8 @@ class File:
     self.hunks.append(hunk)
 
   def _parse_header(self, file_header_change_row):
-    view_changes_cell = file_header_change_row.select_one('> td:nth-of-type(2)')
+    view_changes_cell = \
+      file_header_change_row.select_one(self.VIEW_CHANGES_CELL_SELECTOR)
 
     if view_changes_cell is not None:
       decoded_contents = view_changes_cell.decode_contents()

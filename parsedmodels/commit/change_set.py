@@ -3,6 +3,8 @@ from parsedmodels.commit.file_hunk import FileHunk
 
 
 class ChangeSet:
+  CHANGE_ROWS_SELECTOR = '> tbody > tr'
+
   FILE_NAME_HEADER_STYLE = 'background: #ffffff; color: #333333'
 
   CHANGES_TABLE_CLASS = 'aui'
@@ -18,7 +20,7 @@ class ChangeSet:
     changes_table = commit_changes_row.find('table', self.CHANGES_TABLE_CLASS)
 
     if changes_table is not None:
-      change_rows = changes_table.select('> tbody > tr')
+      change_rows = changes_table.select(self.CHANGE_ROWS_SELECTOR)
 
       if change_rows is not None:
         for row in change_rows:
