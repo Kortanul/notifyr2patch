@@ -1,6 +1,6 @@
-from decorators.git_patch.file_decorator import FileDecorator
+from decorators.gitpatch.file_decorator import FileDecorator
 
-from decorators.unified_diff.commit_decorator \
+from decorators.unifieddiff.commit_decorator \
   import CommitDecorator \
   as UnifiedCommitDecorator
 

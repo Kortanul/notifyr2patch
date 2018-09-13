@@ -1,4 +1,4 @@
-from decorators.unified_diff.file_decorator import FileDecorator
+from decorators.unifieddiff.file_decorator import FileDecorator
 
 
 class CommitDecorator:

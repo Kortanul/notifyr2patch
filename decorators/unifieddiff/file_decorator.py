@@ -1,4 +1,4 @@
-from decorators.unified_diff.file_hunk_decorator import FileHunkDecorator
+from decorators.unifieddiff.file_hunk_decorator import FileHunkDecorator
 
 
 ##

@@ -1,4 +1,4 @@
-from decorators.unified_diff.file_decorator \
+from decorators.unifieddiff.file_decorator \
   import FileDecorator \
   as UnifiedFileDecorator
 

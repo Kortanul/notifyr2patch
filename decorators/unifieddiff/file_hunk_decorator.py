@@ -1,5 +1,5 @@
-from decorators.unified_diff.hunk_line_decorator import HunkLineDecorator
-from decorators.unified_diff.line_metrics import LineMetrics
+from decorators.unifieddiff.hunk_line_decorator import HunkLineDecorator
+from decorators.unifieddiff.line_metrics import LineMetrics
 
 
 # @@ -1,3 +1,9 @@
