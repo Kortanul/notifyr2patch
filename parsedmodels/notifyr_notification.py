@@ -14,6 +14,9 @@ class NotifyrNotification:
 
     self._parse_file(filename)
 
+  def __getattr__(self, attr):
+    return getattr(self.details, attr)
+
   def _parse_file(self, filename):
     with open(filename) as file:
       content = self._extract_content(file)

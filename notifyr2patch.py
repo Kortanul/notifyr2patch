@@ -2,6 +2,7 @@ import argparse
 
 from decorators.gitpatch.commit_decorator import CommitDecorator
 from gitclient.git_client import GitClient
+from gitclient.hash_solver import CommitSolver
 from parsedmodels.notifyr_notification import NotifyrNotification
 
 def parse_args():
@@ -47,8 +48,10 @@ print(notification.details.pusher)
 print(notification.details.action)
 print(notification.details.branch_name)
 
-for commit in notification.commits:
-  print('')
+CommitSolver(client, args.base_ref, notification).run()
 
-  print(CommitDecorator(commit))
-  print('')
+# for commit in notification.commits:
+#   print('')
+#
+#   print(CommitDecorator(commit))
+#   print('')
