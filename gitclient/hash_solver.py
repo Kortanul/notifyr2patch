@@ -1,5 +1,11 @@
-from collections import Counter
-from functools import reduce
+import itertools
+
+from dateutil import tz
+
+from decorators.gitpatch.commit_decorator import CommitDecorator
+from gitclient.hashsolving.author_distribution import AuthorDistribution
+from gitclient.hashsolving.commit_time_distribution import \
+  CommitTimeDistribution
 
 
 class CommitSolver:
@@ -7,37 +13,44 @@ class CommitSolver:
     self.git_client = git_client
     self.base_ref = base_ref
     self.notification = notification
+
+    self.commit_time_distributions = dict()
     
   def run(self):
-    for commit in self.notification.commits:
-      print(self._get_author_name_candidates(commit))
+    for notification_commit in self.notification.commits:
+      author_name_pool = [
+        self.notification.pusher,
+        notification_commit.author
+      ]
 
-  def _get_author_name_candidates(self, commit):
-    pusher_candidates = self._get_notification_pusher_candidates()
-    commit_candidates = self._get_commit_author_candidates(commit)
+      author_distribution = \
+        AuthorDistribution(self.git_client, author_name_pool)
 
-    all_candidates = pusher_candidates + commit_candidates
+      for _ in itertools.repeat(None, 100):
+        author_pick = author_distribution.pick_author()
 
-    sorted_candidates = \
-      sorted(
-        all_candidates,
-        key=lambda candidate: candidate[1],
-        reverse=True
-      )
+        commit_time_distribution = \
+          self.commit_time_distribution_for(author_pick)
 
-    sorted_candidate_map = {}
+        commit_lag_range_pick = \
+          commit_time_distribution.pick_author_commit_time_lag_range()
 
-    for candidate in sorted_candidates:
-      name = candidate[0]
-      weight = candidate[1]
+        offset_pick = commit_time_distribution.pick_commit_timezone_offset()
 
-      if name not in sorted_candidate_map:
-        sorted_candidate_map[name] = weight
+        print(offset_pick)
+        print(notification_commit.header.date)
 
-    return list(sorted_candidate_map.keys())
+        offset = tz.tzoffset(None, offset_pick)
+        print(notification_commit.header.date.astimezone(offset))
 
-  def _get_notification_pusher_candidates(self):
-    return self.git_client.fuzzy_author_search(self.notification.pusher)
+        # self.dump_patch(notification_commit)
 
-  def _get_commit_author_candidates(self, commit):
-    return self.git_client.fuzzy_author_search(commit.author)
+  def dump_patch(self, commit):
+    print(CommitDecorator(commit))
+
+  def commit_time_distribution_for(self, author_name):
+    if author_name not in self.commit_time_distributions:
+      self.commit_time_distributions[author_name] = \
+        CommitTimeDistribution(self.git_client, author_name)
+
+    return self.commit_time_distributions[author_name]
