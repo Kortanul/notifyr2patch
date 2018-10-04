@@ -2,6 +2,7 @@ import random
 from datetime import timedelta
 
 import numpy
+from dateutil import tz
 from lazy import lazy
 
 FIVE_MINUTES_IN_SECONDS = timedelta(minutes=5).total_seconds()
@@ -65,7 +66,9 @@ class CommitTimeDistribution:
       list(self.commit_timezone_offset_distribution.values())
     )
 
-    return next(iter(offset_choice), 0)
+    offset_value = next(iter(offset_choice), 0)
+
+    return tz.tzoffset(None, offset_value)
 
   def _calculate_distribution(self, values, bin_count):
     return self._calculate_distribution_for_range(values, 0, bin_count)

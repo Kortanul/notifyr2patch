@@ -1,11 +1,15 @@
 import itertools
+from datetime import timedelta
 
+import git
 from dateutil import tz
 
 from decorators.gitpatch.commit_decorator import CommitDecorator
 from gitclient.hashsolving.author_distribution import AuthorDistribution
 from gitclient.hashsolving.commit_time_distribution import \
   CommitTimeDistribution
+
+TEMP_PATCH_FILENAME = "temp.patch"
 
 
 class CommitSolver:
@@ -26,27 +30,43 @@ class CommitSolver:
       author_distribution = \
         AuthorDistribution(self.git_client, author_name_pool)
 
-      for _ in itertools.repeat(None, 100):
-        author_pick = author_distribution.pick_author()
+      self.dump_patch(notification_commit)
+
+      for _ in itertools.repeat(None, 1):
+        author_name = author_distribution.pick_author()
 
         commit_time_distribution = \
-          self.commit_time_distribution_for(author_pick)
+          self.commit_time_distribution_for(author_name)
 
-        commit_lag_range_pick = \
+        offset = commit_time_distribution.pick_commit_timezone_offset()
+
+        author_date = notification_commit.header.date.astimezone(offset)
+
+        commit_lag_range = \
           commit_time_distribution.pick_author_commit_time_lag_range()
 
-        offset_pick = commit_time_distribution.pick_commit_timezone_offset()
+        for author_to_commit_lag in commit_lag_range:
+          commit_date = author_date + timedelta(seconds=author_to_commit_lag)
 
-        print(offset_pick)
-        print(notification_commit.header.date)
+          self.git_client.checkout_detached(self.base_ref)
+          self.git_client.abort_mailbox_patch()
 
-        offset = tz.tzoffset(None, offset_pick)
-        print(notification_commit.header.date.astimezone(offset))
+          print("Trying:")
+          print(f" - Author: {author_name}")
+          print(f" - Offset: {offset}")
+          print(f" - Author Date: {author_date}")
+          print(f" - Commit Date: {commit_date}")
 
-        # self.dump_patch(notification_commit)
+          try:
+            self.git_client.apply_mailbox_patch(TEMP_PATCH_FILENAME)
+            self.git_client.reset_head_softly()
+          except git.exc.GitCommandError as err:
+            if err.status != 128:
+              raise
 
   def dump_patch(self, commit):
-    print(CommitDecorator(commit))
+    with open(TEMP_PATCH_FILENAME, "w") as patch_file:
+      patch_file.write(str(CommitDecorator(commit)))
 
   def commit_time_distribution_for(self, author_name):
     if author_name not in self.commit_time_distributions:

@@ -34,8 +34,6 @@ def parse_args():
 args = parse_args()
 
 client = GitClient(args.git_repo)
-client.checkout_detached(args.base_ref)
-
 notification = NotifyrNotification(args.notification_file)
 
 CommitSolver(client, args.base_ref, notification).run()
