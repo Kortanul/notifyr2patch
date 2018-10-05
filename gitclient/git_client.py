@@ -2,7 +2,7 @@ import os
 
 import git
 from fuzzywuzzy import process
-from git import Repo
+from git import Repo, Actor
 from lazy import lazy
 
 
@@ -10,6 +10,10 @@ class GitClient:
   def __init__(self, repo_path):
     self.repo_path = repo_path
     self.repo = Repo(repo_path)
+
+  @property
+  def head_revision(self):
+    return self.repo.head.commit.hexsha
 
   def reset_head_softly(self):
     self.repo.head.reset('HEAD~1', index=False, working_tree=False)
@@ -19,10 +23,23 @@ class GitClient:
 
     return self.repo.git.apply(full_patch_path, '--cached')
 
-  def apply_mailbox_patch(self, filename):
+  def apply_mailbox_patch(self, filename,
+                          committer=None, commit_date=None):
+    git_environment = {}
+
+    if committer is not None:
+      committer_actor = Actor._from_string(committer)
+
+      git_environment['GIT_COMMITTER_NAME'] = committer_actor.name
+      git_environment['GIT_COMMITTER_EMAIL'] = committer_actor.email
+
+    if commit_date is not None:
+      git_environment['GIT_COMMITTER_DATE'] = str(commit_date)
+
     full_patch_path = self._relative_to_absolute_path(filename)
 
-    return self.repo.git.am(full_patch_path)
+    with self.repo.git.custom_environment(**git_environment):
+      return self.repo.git.am(full_patch_path)
 
   def abort_mailbox_patch(self):
     try:
