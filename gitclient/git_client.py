@@ -15,6 +15,16 @@ class GitClient:
   def head_revision(self):
     return self.repo.head.commit.hexsha
 
+  @lazy
+  def author_list(self):
+    raw_authors = self.repo.git.log('--all', '--format=%aN <%cE>').split('\n')
+    unique_authors = sorted(set(raw_authors))
+
+    return unique_authors
+
+  def checkout_detached(self, commit_id):
+    return self.repo.git.checkout(commit_id)
+
   def reset_head_softly(self):
     self.repo.head.reset('HEAD~1', index=False, working_tree=False)
 
@@ -48,8 +58,8 @@ class GitClient:
       if err.status != 128:
         raise
 
-  def checkout_detached(self, commit_id):
-    return self.repo.git.checkout(commit_id)
+  def export_head_as_patch(self):
+    return self.repo.git.format_patch('-1', 'HEAD')
 
   def fuzzy_author_search(self, author_name):
     return process.extract(author_name, self.author_list)
@@ -71,14 +81,6 @@ class GitClient:
       list(self.repo.iter_commits(committer=committer_name, all=True))
 
     return commits
-
-  @lazy
-  def author_list(self):
-    raw_authors = self.repo.git.log('--all', '--format=%aN <%cE>').split('\n')
-    unique_authors = sorted(set(raw_authors))
-
-    return unique_authors
-
 
   def _relative_to_absolute_path(self, path):
     return os.path.join(os.getcwd(), path)

@@ -44,6 +44,14 @@ class CommitTimeDistribution:
     # Bucket GMT-12 and GMT+12 into 1 second blocks (86,400 blocks total)
     return self._calculate_distribution_for_range(all_offsets, -43200, 43200)
 
+  def pick_author_commit_date(self, author_date):
+    random_lag_range = self.pick_author_commit_time_lag_range()
+
+    random_lag = random.choice(random_lag_range)
+    commit_date = author_date + timedelta(seconds=random_lag)
+
+    return commit_date
+
   def pick_author_commit_time_lag_range(self):
     lag_block_choice = random.choices(
       list(self.author_commit_time_lag_distribution.keys()),
