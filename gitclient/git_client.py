@@ -62,7 +62,7 @@ class GitClient:
     return self.repo.git.format_patch('-1', 'HEAD')
 
   def fuzzy_author_search(self, author_name):
-    return process.extract(author_name, self.author_list)
+    return process.extract(author_name, self.author_list, limit=3)
 
   def author_or_committer_commits(self, name):
     author_commits = self.author_commits(name)

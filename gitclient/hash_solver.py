@@ -1,10 +1,14 @@
+import itertools
+import tempfile
+from os import path
+
 from decorators.gitpatch.commit_decorator import CommitDecorator
 from gitclient.hashsolving.author_distribution import AuthorDistribution
 from gitclient.hashsolving.commit_time_distribution import \
   CommitTimeDistribution
+from gitclient.hashsolving.committer_distribution import CommitterDistribution
 
 TEMP_PATCH_FILENAME = "temp.patch"
-MAX_ITERATIONS = 10_000
 
 
 class CommitSolver:
@@ -13,6 +17,7 @@ class CommitSolver:
     self.base_ref = base_ref
     self.notification = notification
 
+    self.committer_distributions = dict()
     self.commit_time_distributions = dict()
     
   def run(self):
@@ -30,8 +35,12 @@ class CommitSolver:
       attempt = 1
       seen_combinations = set()
 
-      while len(seen_combinations) < MAX_ITERATIONS:
+      while True:
         author_name = author_distribution.pick_author()
+
+        committer_distribution = self.committer_distribution_for(author_name)
+
+        committer_name = committer_distribution.pick_committer()
 
         commit_time_distribution = \
           self.commit_time_distribution_for(author_name)
@@ -41,10 +50,14 @@ class CommitSolver:
         author_date = notification_commit.date.astimezone(offset)
 
         commit_date = \
-          commit_time_distribution.pick_author_commit_date(author_date)
+          commit_time_distribution.pick_commit_date(author_date)
 
         combination = (
-          author_name, offset.utcoffset(None), author_date, commit_date
+          author_name,
+          committer_name,
+          offset.utcoffset(None),
+          author_date,
+          commit_date
         )
 
         if combination in seen_combinations:
@@ -58,18 +71,25 @@ class CommitSolver:
 
         print(f"Attempt #{attempt} - Trying:")
         print(f" - Author: {author_name}")
+        print(f" - Committer: {committer_name}")
         print(f" - Offset: {offset}")
         print(f" - Author Date: {author_date}")
         print(f" - Commit Date: {commit_date}")
         print("")
 
-        self.dump_patch(notification_commit, author_name, author_date)
+        # FIXME: Hard-coded temp folder path
+        with tempfile.TemporaryDirectory(dir="Z:/") as tmp_dir:
+          tmp_patch_filename = path.join(tmp_dir, TEMP_PATCH_FILENAME)
 
-        self.git_client.apply_mailbox_patch(
-          TEMP_PATCH_FILENAME,
-          committer=author_name,
-          commit_date=commit_date,
-        )
+          self.dump_patch(
+            notification_commit, author_name, author_date, tmp_patch_filename
+          )
+
+          self.git_client.apply_mailbox_patch(
+            tmp_patch_filename,
+            committer=committer_name,
+            commit_date=commit_date,
+          )
 
         current_commit_id = self.git_client.head_revision
 
@@ -85,10 +105,8 @@ class CommitSolver:
 
         attempt += 1
 
-      print(f"Failed to find a solution after {MAX_ITERATIONS} attempts.")
-
-  def dump_patch(self, commit, author_name, author_date):
-    with open(TEMP_PATCH_FILENAME, "w") as patch_file:
+  def dump_patch(self, commit, author_name, author_date, tmp_patch_filename):
+    with open(tmp_patch_filename, "w") as patch_file:
       decorator = \
         CommitDecorator(
           commit,
@@ -97,6 +115,13 @@ class CommitSolver:
         )
 
       patch_file.write(str(decorator))
+
+  def committer_distribution_for(self, author_name):
+    if author_name not in self.committer_distributions:
+      self.committer_distributions[author_name] = \
+        CommitterDistribution(self.git_client, author_name)
+
+    return self.committer_distributions[author_name]
 
   def commit_time_distribution_for(self, author_name):
     if author_name not in self.commit_time_distributions:

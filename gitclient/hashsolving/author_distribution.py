@@ -8,19 +8,19 @@ from lazy import lazy
 class AuthorDistribution:
   def __init__(self, git_client, author_name_pool):
     self.git_client = git_client
-    self.author_names = author_name_pool
+    self.author_name_pool = author_name_pool
 
-  def pick_author(self):
-    author_choice = random.choices(
-      list(self.author_frequencies.keys()),
-      list(self.author_frequencies.values())
-    )
+  @lazy
+  def author_names(self):
+    return list(self.author_frequencies.keys())
 
-    return next(iter(author_choice), None)
+  @lazy
+  def author_name_weights(self):
+    return list(self.author_frequencies.values())
 
   @lazy
   def author_frequencies(self):
-    confidences = self._raw_target_confidences
+    confidences = self.author_confidences
 
     total_weight = reduce((lambda x, y: x + y), confidences.values())
 
@@ -31,21 +31,28 @@ class AuthorDistribution:
 
     return frequencies
 
-  @property
-  def _raw_target_confidences(self):
-    target_confidences = defaultdict(int)
+  @lazy
+  def author_confidences(self):
+    author_confidences = defaultdict(int)
 
-    for author_name in self.author_names:
-      candidate_confidences = self._get_author_candidates(author_name)
+    for author_name in self.author_name_pool:
+      candidates = self._get_author_candidates(author_name)
 
-      for confidence_tuple in candidate_confidences:
-        name = confidence_tuple[0]
-        weight = confidence_tuple[1]
+      for candidate_tuple in candidates:
+        name = candidate_tuple[0]
+        weight = candidate_tuple[1]
 
-        final_weight = target_confidences[name] + weight
-        target_confidences[name] = final_weight
+        author_confidences[name] += weight
 
-    return target_confidences
+    return author_confidences
+
+  def pick_author(self):
+    author_choice = random.choices(
+      self.author_names,
+      self.author_name_weights
+    )
+
+    return next(iter(author_choice), None)
 
   def _get_author_candidates(self, name):
     return self.git_client.fuzzy_author_search(name)
