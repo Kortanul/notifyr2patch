@@ -118,14 +118,29 @@ class CommitSolver:
 
   def committer_distribution_for(self, author_name):
     if author_name not in self.committer_distributions:
-      self.committer_distributions[author_name] = \
-        CommitterDistribution(self.git_client, author_name)
+      distribution = CommitterDistribution(self.git_client, author_name)
+      self.committer_distributions[author_name] = distribution
+
+      print(
+        f"Committer distribution for {author_name}:\n"
+        f"{distribution.committer_frequencies}"
+      )
+
+      print()
 
     return self.committer_distributions[author_name]
 
   def commit_time_distribution_for(self, author_name):
     if author_name not in self.commit_time_distributions:
-      self.commit_time_distributions[author_name] = \
-        CommitTimeDistribution(self.git_client, author_name)
+      distribution = CommitTimeDistribution(self.git_client, author_name)
+      self.commit_time_distributions[author_name] = distribution
+
+      print(
+        f"Commit time distribution for {author_name}:\n"
+        f"{distribution.commit_time_lag_block_distribution}"
+      )
+
+      print()
+
 
     return self.commit_time_distributions[author_name]
