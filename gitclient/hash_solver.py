@@ -4,9 +4,11 @@ from os import path
 
 from decorators.gitpatch.commit_decorator import CommitDecorator
 from gitclient.hashsolving.author_distribution import AuthorDistribution
-from gitclient.hashsolving.commit_time_distribution import \
-  CommitTimeDistribution
+from gitclient.hashsolving.author_commit_time_distribution import \
+  AuthorCommitTimeDistribution
 from gitclient.hashsolving.committer_distribution import CommitterDistribution
+from gitclient.hashsolving.global_commit_time_distribution import \
+  GlobalCommitTimeDistribution
 
 TEMP_PATCH_FILENAME = "temp.patch"
 
@@ -21,6 +23,9 @@ class CommitSolver:
     self.commit_time_distributions = dict()
     
   def run(self):
+    global_commit_time_distribution = \
+      self.build_global_commit_time_distribution()
+
     for notification_commit in self.notification.commits:
       target_commit_id = notification_commit.id
 
@@ -42,15 +47,15 @@ class CommitSolver:
 
         committer_name = committer_distribution.pick_committer()
 
-        commit_time_distribution = \
+        author_commit_time_distribution = \
           self.commit_time_distribution_for(author_name)
 
-        offset = commit_time_distribution.pick_commit_timezone_offset()
+        offset = author_commit_time_distribution.pick_commit_timezone_offset()
 
         author_date = notification_commit.date.astimezone(offset)
 
         commit_date = \
-          commit_time_distribution.pick_commit_date(author_date)
+          global_commit_time_distribution.pick_commit_date(author_date)
 
         combination = (
           author_name,
@@ -130,17 +135,28 @@ class CommitSolver:
 
     return self.committer_distributions[author_name]
 
+  def build_global_commit_time_distribution(self):
+    distribution = GlobalCommitTimeDistribution(self.git_client)
+
+    print(
+      f"Global commit time distribution:\n"
+      f"{distribution}"
+    )
+
+    print()
+
+    return distribution
+
   def commit_time_distribution_for(self, author_name):
     if author_name not in self.commit_time_distributions:
-      distribution = CommitTimeDistribution(self.git_client, author_name)
+      distribution = AuthorCommitTimeDistribution(self.git_client, author_name)
       self.commit_time_distributions[author_name] = distribution
 
       print(
         f"Commit time distribution for {author_name}:\n"
-        f"{distribution.commit_time_lag_block_distribution}"
+        f"{distribution}"
       )
 
       print()
-
 
     return self.commit_time_distributions[author_name]

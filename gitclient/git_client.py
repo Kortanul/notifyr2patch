@@ -15,8 +15,29 @@ class GitClient:
   def head_revision(self):
     return self.repo.head.commit.hexsha
 
+  def get_all_commits(self):
+    commits = list(self.repo.iter_commits(all=True))
+
+    return commits
+
+  def get_commits_by_author_or_committer(self, name):
+    author_commits = self.get_commits_by_author(name)
+    committer_commits = self.get_commits_by_committer(name)
+
+    return set(author_commits).union(committer_commits)
+
+  def get_commits_by_author(self, author_name):
+    commits = list(self.repo.iter_commits(author=author_name, all=True))
+
+    return commits
+
+  def get_commits_by_committer(self, committer_name):
+    commits = list(self.repo.iter_commits(committer=committer_name, all=True))
+
+    return commits
+
   @lazy
-  def author_list(self):
+  def get_author_list(self):
     raw_authors = self.repo.git.log('--all', '--format=%aN <%cE>').split('\n')
     unique_authors = sorted(set(raw_authors))
 
@@ -62,25 +83,7 @@ class GitClient:
     return self.repo.git.format_patch('-1', 'HEAD')
 
   def fuzzy_author_search(self, author_name):
-    return process.extract(author_name, self.author_list, limit=3)
-
-  def author_or_committer_commits(self, name):
-    author_commits = self.author_commits(name)
-    committer_commits = self.committer_commits(name)
-
-    return set(author_commits).union(committer_commits)
-
-  def author_commits(self, author_name):
-    commits = \
-      list(self.repo.iter_commits(author=author_name, all=True))
-
-    return commits
-
-  def committer_commits(self, committer_name):
-    commits = \
-      list(self.repo.iter_commits(committer=committer_name, all=True))
-
-    return commits
+    return process.extract(author_name, self.get_author_list, limit=3)
 
   def _relative_to_absolute_path(self, path):
     return os.path.join(os.getcwd(), path)

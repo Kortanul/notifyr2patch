@@ -12,7 +12,7 @@ class CommitterDistribution:
 
   @lazy
   def commits(self):
-    return self.git_client.author_commits(self.author_name)
+    return self.git_client.get_commits_by_author(self.author_name)
 
   @lazy
   def committer_names(self):
