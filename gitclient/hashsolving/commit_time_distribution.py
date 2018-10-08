@@ -7,13 +7,12 @@ from lazy import lazy
 
 from gitclient.hashsolving.value_distribution import ValueDistribution
 
-LAG_WINDOW_CUTOFF = timedelta(days=14).total_seconds()
-LAG_WINDOW_LENGTH = timedelta(minutes=5).total_seconds()
-
 
 class CommitTimeDistribution:
-  def __init__(self, commits):
+  def __init__(self, commits, lag_window_length, lag_window_cutoff):
     self.commits = commits
+    self.lag_window_length = lag_window_length
+    self.lag_window_cutoff = lag_window_cutoff
 
   @lazy
   def commit_time_lag_distribution(self):
@@ -22,10 +21,12 @@ class CommitTimeDistribution:
       for commit in self.commits
     ])
 
-    # Clip lags longer than LAG_WINDOW_CUTOFF, then distribute the remaining
-    # values into buckets of LAG_WINDOW_LENGTH seconds each
+    # Clip lags longer than `lag_window_cutoff`, then distribute the remaining
+    # values into buckets of `lag_window_length` seconds each
     distribution = \
-      ValueDistribution(offset_lags, LAG_WINDOW_LENGTH, 0, LAG_WINDOW_CUTOFF)
+      ValueDistribution(
+        offset_lags, self.lag_window_length, 0, self.lag_window_cutoff
+      )
 
     return distribution
 
