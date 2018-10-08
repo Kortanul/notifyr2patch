@@ -1,14 +1,13 @@
-import itertools
 import tempfile
 from os import path
 
 from decorators.gitpatch.commit_decorator import CommitDecorator
-from gitclient.hashsolving.author_distribution import AuthorDistribution
 from gitclient.hashsolving.author_commit_time_distribution import \
-  AuthorCommitTimeDistribution
+    AuthorCommitTimeDistribution
+from gitclient.hashsolving.author_distribution import AuthorDistribution
 from gitclient.hashsolving.committer_distribution import CommitterDistribution
 from gitclient.hashsolving.global_commit_time_distribution import \
-  GlobalCommitTimeDistribution
+    GlobalCommitTimeDistribution
 
 TEMP_PATCH_FILENAME = "temp.patch"
 
@@ -23,9 +22,6 @@ class CommitSolver:
     self.commit_time_distributions = dict()
     
   def run(self):
-    global_commit_time_distribution = \
-      self.build_global_commit_time_distribution()
-
     for notification_commit in self.notification.commits:
       target_commit_id = notification_commit.id
 
@@ -55,7 +51,7 @@ class CommitSolver:
         author_date = notification_commit.date.astimezone(offset)
 
         commit_date = \
-          global_commit_time_distribution.pick_commit_date(author_date)
+            author_commit_time_distribution.pick_commit_date(author_date)
 
         combination = (
           author_name,
