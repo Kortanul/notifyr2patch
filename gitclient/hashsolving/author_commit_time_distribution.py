@@ -17,4 +17,4 @@ class AuthorCommitTimeDistribution(CommitTimeDistribution):
     super().__init__(commits, LAG_WINDOW_LENGTH, LAG_WINDOW_CUTOFF)
 
   def get_commits(self, git_client, author_name):
-    return git_client.get_commits_by_author_or_committer(author_name)
+    return git_client.get_commits_by_author(author_name)
