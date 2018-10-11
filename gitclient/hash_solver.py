@@ -69,19 +69,20 @@ class CommitSolver:
       )
 
       if seen_combinations.contains(combination).result():
-        print("Skipping ahead...")
+        print(".", end='', flush=True)
         continue
 
       self.git_client.checkout_detached(self.base_ref)
       self.git_client.abort_mailbox_patch()
 
+      print('')
       print(f"Attempt #{attempt} - Trying:")
       print(f" - Author: {author_name}")
       print(f" - Committer: {committer_name}")
       print(f" - Offset: {offset}")
       print(f" - Author Date: {author_date}")
       print(f" - Commit Date: {commit_date}")
-      print("")
+      print('')
 
       # FIXME: Hard-coded temp folder path
       with tempfile.TemporaryDirectory(dir="Z:/") as tmp_dir:
