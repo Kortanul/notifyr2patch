@@ -4,7 +4,7 @@ from gitclient.hashsolving.commit_time_distribution import \
   CommitTimeDistribution
 
 LAG_WINDOW_CUTOFF = timedelta(days=14).total_seconds()
-LAG_WINDOW_LENGTH = timedelta(minutes=5).total_seconds()
+LAG_WINDOW_LENGTH = timedelta(hours=1).total_seconds()
 
 
 ##

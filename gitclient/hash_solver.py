@@ -1,4 +1,5 @@
 import tempfile
+from datetime import timedelta
 from os import path
 
 from decorators.gitpatch.commit_decorator import CommitDecorator
@@ -9,6 +10,7 @@ from gitclient.hashsolving.committer_distribution import CommitterDistribution
 from gitclient.hashsolving.global_commit_time_distribution import \
     GlobalCommitTimeDistribution
 from gitclient.hashsolving.hazelcast_client import HazelcastClient
+from gitclient.hashsolving.incremental_commit_time_picker import IncrementalCommitTimePicker
 
 TEMP_PATCH_FILENAME = "temp.patch"
 
@@ -21,6 +23,7 @@ class CommitSolver:
 
     self.committer_distributions = dict()
     self.commit_time_distributions = dict()
+    self.commit_time_pickers = dict()
     
   def run(self):
     for notification_commit in self.notification.commits:
@@ -52,17 +55,26 @@ class CommitSolver:
         self.commit_time_distribution_for(author_name)
 
       offset = author_commit_time_distribution.pick_commit_timezone_offset()
+      offset_value = offset.utcoffset(None)
 
       author_date = notification_commit.date.astimezone(offset)
 
       commit_date = \
-        author_commit_time_distribution.pick_commit_date(author_date)
+        self.incremental_time_picker_for(author_name, offset_value) \
+            .next_simple_commit_date(author_date)
+
+      # commit_date = \
+      #   self.incremental_time_picker_for(author_name, offset_value) \
+      #       .next_probable_commit_date(author_date)
+
+      # commit_date = \
+      #   author_commit_time_distribution.pick_commit_date(author_date)
 
       combination = str(
         (
           author_name,
           committer_name,
-          offset.utcoffset(None),
+          offset_value,
           author_date,
           commit_date
         )
@@ -165,3 +177,18 @@ class CommitSolver:
       print()
 
     return self.commit_time_distributions[author_name]
+
+  def incremental_time_picker_for(self, author_name, tz_offset):
+    if author_name not in self.commit_time_pickers:
+      self.commit_time_pickers[author_name] = dict()
+
+    if tz_offset not in self.commit_time_pickers[author_name]:
+      distribution = self.commit_time_distribution_for(author_name)
+      self.commit_time_pickers[author_name][tz_offset] = \
+        IncrementalCommitTimePicker(
+          distribution,
+          min_commit_offset=timedelta(days=3).total_seconds(),
+          max_commit_offset=timedelta(days=4).total_seconds()
+        )
+
+    return self.commit_time_pickers[author_name][tz_offset]
