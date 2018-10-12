@@ -3,16 +3,26 @@ from datetime import timedelta
 from os import path
 
 from decorators.gitpatch.commit_decorator import CommitDecorator
-from gitclient.hashsolving.author_commit_time_distribution import \
-    AuthorCommitTimeDistribution
+from gitclient.hashsolving.author_commit_offset_distribution import \
+  AuthorCommitOffsetDistribution
 from gitclient.hashsolving.author_distribution import AuthorDistribution
+from gitclient.hashsolving.author_timezone_distribution import \
+  AuthorTimezoneDistribution
 from gitclient.hashsolving.committer_distribution import CommitterDistribution
-from gitclient.hashsolving.global_commit_time_distribution import \
-    GlobalCommitTimeDistribution
+from gitclient.hashsolving.global_commit_offset_distribution import \
+  GlobalCommitOffsetDistribution
 from gitclient.hashsolving.hazelcast_client import HazelcastClient
-from gitclient.hashsolving.incremental_commit_time_picker import IncrementalCommitTimePicker
+from gitclient.hashsolving.probabilistic_incremental_commit_time_picker import \
+  ProbabilisticIncrementalCommitTimePicker
+from gitclient.hashsolving.simple_incremental_commit_time_picker import \
+  SimpleIncrementalCommitTimePicker
 
 TEMP_PATCH_FILENAME = "temp.patch"
+
+MIN_COMMIT_OFFSET = timedelta(days=3,hours=12).total_seconds()
+MAX_COMMIT_OFFSET = timedelta(days=4).total_seconds()
+
+COMMIT_WINDOWS_SPAN = timedelta(minutes=15).total_seconds()
 
 
 class CommitSolver:
@@ -23,6 +33,7 @@ class CommitSolver:
 
     self.committer_distributions = dict()
     self.commit_time_distributions = dict()
+    self.timezone_distributions = dict()
     self.commit_time_pickers = dict()
     
   def run(self):
@@ -48,27 +59,30 @@ class CommitSolver:
       author_name = author_distribution.pick_author()
 
       committer_distribution = self.committer_distribution_for(author_name)
-
       committer_name = committer_distribution.pick_committer()
 
       author_commit_time_distribution = \
         self.commit_time_distribution_for(author_name)
 
-      offset = author_commit_time_distribution.pick_commit_timezone_offset()
+      author_timezone_distribution = \
+        self.author_timezone_distribution_for(author_name)
+
+      offset = author_timezone_distribution.pick_timezone_offset()
       offset_value = offset.utcoffset(None)
 
       author_date = notification_commit.date.astimezone(offset)
 
+      # commit_date = \
+      #   self.probabilistic_incremental_time_picker_for(
+      #     author_name, offset_value
+      #   ).pick_commit_date(author_date)
+      #
+      # commit_date = \
+      #   self.simple_incremental_time_picker_for(author_name, offset_value) \
+      #       .pick_commit_date(author_date)
+
       commit_date = \
-        self.incremental_time_picker_for(author_name, offset_value) \
-            .next_simple_commit_date(author_date)
-
-      # commit_date = \
-      #   self.incremental_time_picker_for(author_name, offset_value) \
-      #       .next_probable_commit_date(author_date)
-
-      # commit_date = \
-      #   author_commit_time_distribution.pick_commit_date(author_date)
+        author_commit_time_distribution.pick_commit_date(author_date)
 
       combination = str(
         (
@@ -153,7 +167,13 @@ class CommitSolver:
     return self.committer_distributions[author_name]
 
   def build_global_commit_time_distribution(self):
-    distribution = GlobalCommitTimeDistribution(self.git_client)
+    distribution = \
+      GlobalCommitOffsetDistribution(
+        self.git_client,
+        commit_offset_windows_span=COMMIT_WINDOWS_SPAN,
+        min_commit_offset=MIN_COMMIT_OFFSET,
+        max_commit_offset=MAX_COMMIT_OFFSET
+    )
 
     print(
       f"Global commit time distribution:\n"
@@ -166,7 +186,15 @@ class CommitSolver:
 
   def commit_time_distribution_for(self, author_name):
     if author_name not in self.commit_time_distributions:
-      distribution = AuthorCommitTimeDistribution(self.git_client, author_name)
+      distribution = \
+        AuthorCommitOffsetDistribution(
+          self.git_client,
+          author_name,
+          commit_offset_windows_span=COMMIT_WINDOWS_SPAN,
+          min_commit_offset=MIN_COMMIT_OFFSET,
+          max_commit_offset=MAX_COMMIT_OFFSET
+        )
+
       self.commit_time_distributions[author_name] = distribution
 
       print(
@@ -178,17 +206,38 @@ class CommitSolver:
 
     return self.commit_time_distributions[author_name]
 
-  def incremental_time_picker_for(self, author_name, tz_offset):
+  def author_timezone_distribution_for(self, author_name):
+    if author_name not in self.timezone_distributions:
+      distribution = AuthorTimezoneDistribution(self.git_client, author_name)
+
+      self.timezone_distributions[author_name] = distribution
+
+      print(
+        f"Author timezone distribution for {author_name}:\n"
+        f"{distribution}"
+      )
+
+      print()
+
+    return self.timezone_distributions[author_name]
+
+  def simple_incremental_time_picker_for(self, author_name, tz_offset):
     if author_name not in self.commit_time_pickers:
       self.commit_time_pickers[author_name] = dict()
 
     if tz_offset not in self.commit_time_pickers[author_name]:
       distribution = self.commit_time_distribution_for(author_name)
       self.commit_time_pickers[author_name][tz_offset] = \
-        IncrementalCommitTimePicker(
-          distribution,
-          min_commit_offset=timedelta(days=3).total_seconds(),
-          max_commit_offset=timedelta(days=4).total_seconds()
-        )
+        ProbabilisticIncrementalCommitTimePicker(distribution)
+
+    return self.commit_time_pickers[author_name][tz_offset]
+
+  def probabilistic_incremental_time_picker_for(self, author_name, tz_offset):
+    if author_name not in self.commit_time_pickers:
+      self.commit_time_pickers[author_name] = dict()
+
+    if tz_offset not in self.commit_time_pickers[author_name]:
+      self.commit_time_pickers[author_name][tz_offset] = \
+        SimpleIncrementalCommitTimePicker(MIN_COMMIT_OFFSET, MAX_COMMIT_OFFSET)
 
     return self.commit_time_pickers[author_name][tz_offset]
