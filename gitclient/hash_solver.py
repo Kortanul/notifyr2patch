@@ -226,9 +226,8 @@ class CommitSolver:
       self.commit_time_pickers[author_name] = dict()
 
     if tz_offset not in self.commit_time_pickers[author_name]:
-      distribution = self.commit_time_distribution_for(author_name)
       self.commit_time_pickers[author_name][tz_offset] = \
-        ProbabilisticIncrementalCommitTimePicker(distribution)
+        SimpleIncrementalCommitTimePicker(MIN_COMMIT_OFFSET, MAX_COMMIT_OFFSET)
 
     return self.commit_time_pickers[author_name][tz_offset]
 
@@ -237,7 +236,9 @@ class CommitSolver:
       self.commit_time_pickers[author_name] = dict()
 
     if tz_offset not in self.commit_time_pickers[author_name]:
+      distribution = self.commit_time_distribution_for(author_name)
+
       self.commit_time_pickers[author_name][tz_offset] = \
-        SimpleIncrementalCommitTimePicker(MIN_COMMIT_OFFSET, MAX_COMMIT_OFFSET)
+        ProbabilisticIncrementalCommitTimePicker(distribution)
 
     return self.commit_time_pickers[author_name][tz_offset]
