@@ -6,7 +6,9 @@ class HtmlTransformer:
   NESTED_MARKUP_WRAPPER_TAG = '<tt>'
 
   NEW_LINE_PATTERN = re.compile(r'<br\s?/?>')
-  NESTED_MARKUP_PATTERN = re.compile(r'^<tt>(.*)</tt>')
+
+  NESTED_MARKUP_PATTERN = \
+    re.compile(r'^<tt>(.*)</tt>$', flags=re.MULTILINE|re.DOTALL)
 
   @classmethod
   def contains_nested_markup(cls, html_string):
@@ -16,7 +18,7 @@ class HtmlTransformer:
     self.string = string
 
   def unpack_nested_markup(self):
-    self.string = self.NESTED_MARKUP_PATTERN.sub(r'\1', self.string)
+    self.string = self.NESTED_MARKUP_PATTERN.sub(r'\1', str(self)).strip()
 
     return self
 
