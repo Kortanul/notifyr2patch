@@ -19,32 +19,44 @@ class CommitHeader:
 
   def _parse_row(self, commit_header_row):
     if commit_header_row is not None:
-      self._parse_commit_id(commit_header_row)
-      self._parse_commit_message(commit_header_row)
-      self._parse_commit_author(commit_header_row)
-      self._parse_commit_time(commit_header_row)
+      column_count = len(commit_header_row.select('> td'))
 
-  def _parse_commit_id(self, commit_header_row):
+      # Older version of Notifyr does not include commit author info
+      if column_count == 3:
+        self._parse_commit_id(commit_header_row, 1)
+        self._parse_commit_message(commit_header_row, 2)
+        self._parse_commit_time(commit_header_row, 3)
+
+      elif column_count == 4:
+        self._parse_commit_id(commit_header_row, 1)
+        self._parse_commit_message(commit_header_row, 2)
+        self._parse_commit_author(commit_header_row, 3)
+        self._parse_commit_time(commit_header_row, 4)
+
+  def _parse_commit_id(self, commit_header_row, column_index):
     commit_matches = \
-      self._parse_cell_with_regex(commit_header_row, 1, self.COMMIT_ID_PATTERN)
+      self._parse_cell_with_regex(
+        commit_header_row, column_index, self.COMMIT_ID_PATTERN
+      )
 
     if commit_matches is not None:
       self.id = commit_matches['commit_id']
 
-  def _parse_commit_message(self, commit_header_row):
-    commit_message = self._parse_text_cell(commit_header_row, 2)
+  def _parse_commit_message(self, commit_header_row, column_index):
+    commit_message = self._parse_text_cell(commit_header_row, column_index)
 
     if commit_message is not None:
       self.message = commit_message
 
-  def _parse_commit_author(self, commit_header_row):
-    commit_message = self._parse_and_strip_text_cell(commit_header_row, 3)
+  def _parse_commit_author(self, commit_header_row, column_index):
+    commit_message = \
+      self._parse_and_strip_text_cell(commit_header_row, column_index)
 
     if commit_message is not None:
       self.author = commit_message
 
-  def _parse_commit_time(self, commit_header_row):
-    cell_contents = self._get_cell_contents(commit_header_row, 4)
+  def _parse_commit_time(self, commit_header_row, column_index):
+    cell_contents = self._get_cell_contents(commit_header_row, column_index)
 
     if cell_contents is not None:
       # It gets harder and harder to find time nowadays.

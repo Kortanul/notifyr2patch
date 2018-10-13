@@ -1,11 +1,14 @@
 from parsedmodels.commit.file import File
+import re
+
 from parsedmodels.commit.file_hunk import FileHunk
 
 
 class ChangeSet:
   CHANGE_ROWS_SELECTOR = '> tbody > tr'
 
-  FILE_NAME_HEADER_STYLE = 'background: #ffffff; color: #333333'
+  FILE_NAME_HEADER_STYLE_PATTERN = \
+    re.compile(r'background: #fff(fff)?; color: #333(333)?')
 
   CHANGES_TABLE_CLASS = 'aui'
   DIFF_HUNK_ROW_CLASS = 'diff-hunk'
@@ -58,12 +61,13 @@ class ChangeSet:
 
   @classmethod
   def _is_file_header_row(cls, row):
-    return row['style'] == cls.FILE_NAME_HEADER_STYLE and \
+    return cls.FILE_NAME_HEADER_STYLE_PATTERN.match(row['style']) and \
            len(row.select('> td')) == 2
 
   @classmethod
   def _is_hunk_row(cls, row):
-    return cls.DIFF_HUNK_ROW_CLASS in list(row['class'])
+    return row.has_attr('class') and \
+           cls.DIFF_HUNK_ROW_CLASS in list(row['class'])
 
   @property
   def _current_file(self):
