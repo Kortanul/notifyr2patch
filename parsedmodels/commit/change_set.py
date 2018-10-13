@@ -1,7 +1,8 @@
-from parsedmodels.commit.file import File
 import re
 
+from parsedmodels.commit.deleted_file import DeletedFile
 from parsedmodels.commit.file_hunk import FileHunk
+from parsedmodels.commit.regular_file import RegularFile
 
 
 class ChangeSet:
@@ -36,13 +37,19 @@ class ChangeSet:
     elif self._is_hunk_row(row):
       self._parse_hunks(row)
 
+    elif self._is_deletion_row(row):
+      self._parse_deletion(row)
+
     else:
       raise RuntimeError(
         f'Unexpected row encountered. Row contains: #{str(row)}'
       )
 
   def _parse_file_header(self, row):
-    self.files.append(File(row))
+    self.files.append(RegularFile(row))
+
+  def _parse_deletion(self, row):
+    self.files.append(DeletedFile(row))
 
   def _parse_hunks(self, hunk_container_row):
     current_file = self._current_file
@@ -68,6 +75,10 @@ class ChangeSet:
   def _is_hunk_row(cls, row):
     return row.has_attr('class') and \
            cls.DIFF_HUNK_ROW_CLASS in list(row['class'])
+
+  @classmethod
+  def _is_deletion_row(cls, row):
+    return len(row.select('> td > del')) == 1
 
   @property
   def _current_file(self):

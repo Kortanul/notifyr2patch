@@ -42,18 +42,34 @@ class FileDecorator:
   def __init__(self, commit_file):
     self.commit_file = commit_file
 
-    self.hunk_decorators = \
-      [FileHunkDecorator(file_hunk) for file_hunk in commit_file.hunks]
-
   @property
   def file_name(self):
     return self.commit_file.filename
 
   def __str__(self):
+    if self.commit_file.is_deleted:
+      lines = self._deleted_lines()
+    else:
+      lines = self._regular_lines()
+
+    return '\n'.join(lines)
+
+  def _regular_lines(self):
+    hunk_decorators = \
+      [FileHunkDecorator(file_hunk) for file_hunk in self.commit_file.hunks]
+
     lines = [
       f'--- a/{self.file_name}',
       f'+++ b/{self.file_name}',
-      ''.join([str(decorator) for decorator in self.hunk_decorators])
+      ''.join([str(decorator) for decorator in hunk_decorators])
     ]
 
-    return '\n'.join(lines)
+    return lines
+
+  def _deleted_lines(self):
+    lines = [
+      f'--- a/{self.file_name}',
+      '+++ dev/null'
+    ]
+
+    return lines
