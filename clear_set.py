@@ -1,6 +1,6 @@
 import argparse
 
-from gitclient.hashsolving.hazelcast_client import HazelcastClient
+from commitsolving.hazelcast_client import HazelcastClient
 from parsedmodels.notifyr_notification import NotifyrNotification
 
 

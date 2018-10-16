@@ -2,20 +2,20 @@ import tempfile
 from datetime import timedelta
 from os import path
 
-from decorators.gitpatch.commit_decorator import CommitDecorator
-from gitclient.hashsolving.author_commit_offset_distribution import \
-  AuthorCommitOffsetDistribution
-from gitclient.hashsolving.author_distribution import AuthorDistribution
-from gitclient.hashsolving.author_timezone_distribution import \
-  AuthorTimezoneDistribution
-from gitclient.hashsolving.committer_distribution import CommitterDistribution
-from gitclient.hashsolving.global_commit_offset_distribution import \
-  GlobalCommitOffsetDistribution
-from gitclient.hashsolving.hazelcast_client import HazelcastClient
-from gitclient.hashsolving.probabilistic_incremental_commit_time_picker import \
+from commitsolving.distributions.author_commit_offset_distribution import \
+    AuthorCommitOffsetDistribution
+from commitsolving.distributions.author_distribution import AuthorDistribution
+from commitsolving.distributions.author_timezone_distribution import \
+    AuthorTimezoneDistribution
+from commitsolving.timepicking.probabilistic_incremental_commit_time_picker import \
   ProbabilisticIncrementalCommitTimePicker
-from gitclient.hashsolving.simple_incremental_commit_time_picker import \
+from commitsolving.timepicking.simple_incremental_commit_time_picker import \
   SimpleIncrementalCommitTimePicker
+from commitsolving.distributions.committer_distribution import CommitterDistribution
+from commitsolving.distributions.global_commit_offset_distribution import \
+  GlobalCommitOffsetDistribution
+from commitsolving.hazelcast_client import HazelcastClient
+from decorators.gitpatch.commit_decorator import CommitDecorator
 
 TEMP_PATCH_FILENAME = "temp.patch"
 

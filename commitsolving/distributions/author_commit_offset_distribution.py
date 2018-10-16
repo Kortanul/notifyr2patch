@@ -1,4 +1,4 @@
-from gitclient.hashsolving.commit_offset_distribution import \
+from commitsolving.distributions.commit_offset_distribution import \
   CommitOffsetDistribution
 
 

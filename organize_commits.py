@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 
 from decorators.gitpatch.commit_decorator import CommitDecorator
-from gitclient.commit_solver import CommitSolver
 from parsedmodels.notifyr_notification import NotifyrNotification
 
 

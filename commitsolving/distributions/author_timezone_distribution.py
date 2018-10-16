@@ -1,7 +1,7 @@
 from dateutil import tz
 from lazy import lazy
 
-from gitclient.hashsolving.value_distribution import ValueDistribution
+from commitsolving.distributions.value_distribution import ValueDistribution
 
 MIN_TIMEZONE_OFFSET = -43200
 MAX_TIMEZONE_OFFSET = 43200

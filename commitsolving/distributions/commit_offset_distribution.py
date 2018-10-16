@@ -1,11 +1,10 @@
 import random
-from datetime import timedelta
 
 import numpy
 from lazy import lazy
 
-from gitclient.hashsolving.commit_time_picker import CommitTimePicker
-from gitclient.hashsolving.value_distribution import ValueDistribution
+from commitsolving.distributions.value_distribution import ValueDistribution
+from commitsolving.timepicking.commit_time_picker import CommitTimePicker
 
 
 class CommitOffsetDistribution(CommitTimePicker):
