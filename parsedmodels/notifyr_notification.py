@@ -10,20 +10,25 @@ class NotifyrNotification:
   COMMITS_TABLE_SELECTOR = '> td > table'
 
   def __init__(self, filename):
+    self.filename = filename
     self.details = None
+    self.commits = []
 
     self._parse_file(filename)
+
+  @property
+  def html_content(self):
+    with open(self.filename, mode='r', encoding='utf-8') as file:
+      return self._extract_content(file)
 
   def __getattr__(self, attr):
     return getattr(self.details, attr)
 
   def _parse_file(self, filename):
-    with open(filename) as file:
-      content = self._extract_content(file)
-      soup = BeautifulSoup(content, 'html.parser')
+    soup = BeautifulSoup(self.html_content, 'html.parser')
 
-      self._parse_details(soup)
-      self._parse_commits(soup)
+    self._parse_details(soup)
+    self._parse_commits(soup)
 
   def _parse_details(self, soup):
     notification_header_row = soup.table.tr.table.tr
@@ -32,9 +37,11 @@ class NotifyrNotification:
 
   def _parse_commits(self, soup):
     commits_row = soup.table.tr.table.select_one(self.COMMITS_WRAPPER_SELECTOR)
-    commit_tables = commits_row.select(self.COMMITS_TABLE_SELECTOR)
 
-    self.commits = [Commit(commit_table) for commit_table in commit_tables]
+    if commits_row is not None:
+      commit_tables = commits_row.select(self.COMMITS_TABLE_SELECTOR)
+
+      self.commits = [Commit(commit_table) for commit_table in commit_tables]
 
   def _extract_content(self, file):
     file_content = file.read()
