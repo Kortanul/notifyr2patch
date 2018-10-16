@@ -1,7 +1,7 @@
 import argparse
 
 from gitclient.git_client import GitClient
-from gitclient.hash_solver import CommitSolver
+from gitclient.commit_solver import CommitSolver
 from parsedmodels.notifyr_notification import NotifyrNotification
 
 
