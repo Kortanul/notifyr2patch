@@ -12,14 +12,14 @@ class AuthorDistribution:
 
   @lazy
   def author_names(self):
-    return list(self.author_frequencies.keys())
+    return list(self.distribution.keys())
 
   @lazy
   def author_name_weights(self):
-    return list(self.author_frequencies.values())
+    return list(self.distribution.values())
 
   @lazy
-  def author_frequencies(self):
+  def distribution(self):
     confidences = self.author_confidences
 
     total_weight = reduce((lambda x, y: x + y), confidences.values())
