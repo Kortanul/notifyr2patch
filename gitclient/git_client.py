@@ -37,8 +37,8 @@ class GitClient:
     return commits
 
   @lazy
-  def get_author_list(self):
-    raw_authors = self.repo.git.log('--all', '--format=%aN <%cE>').split('\n')
+  def repo_author_list(self):
+    raw_authors = self.repo.git.log('--all', '--format=%aN <%aE>').split('\n')
     unique_authors = sorted(set(raw_authors))
 
     return unique_authors
@@ -83,7 +83,7 @@ class GitClient:
     return self.repo.git.format_patch('-1', 'HEAD')
 
   def fuzzy_author_search(self, author_name, limit=3):
-    return process.extract(author_name, self.get_author_list, limit=limit)
+    return process.extract(author_name, self.repo_author_list, limit=limit)
 
   def _relative_to_absolute_path(self, path):
     return os.path.join(os.getcwd(), path)
