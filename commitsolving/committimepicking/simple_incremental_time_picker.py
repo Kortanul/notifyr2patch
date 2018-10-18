@@ -1,9 +1,9 @@
 from lazy import lazy
 
-from commitsolving.timepicking.commit_time_picker import CommitTimePicker
+from commitsolving.committimepicking.commit_time_picker import CommitTimePicker
 
 
-class SimpleIncrementalCommitTimePicker(CommitTimePicker):
+class SimpleIncrementalTimePicker(CommitTimePicker):
   def __init__(self, min_commit_offset, max_commit_offset):
     self.min_commit_offset = min_commit_offset
     self.max_commit_offset = max_commit_offset
@@ -15,9 +15,9 @@ class SimpleIncrementalCommitTimePicker(CommitTimePicker):
 
   @lazy
   def commit_offsets(self):
-    return self._commit_offsets()
+    return self._create_commit_offsets_generator()
 
-  def _commit_offsets(self):
+  def _create_commit_offsets_generator(self):
     next_commit_offset = self.min_commit_offset - 1
 
     while True:

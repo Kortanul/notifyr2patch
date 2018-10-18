@@ -82,8 +82,8 @@ class GitClient:
   def export_head_as_patch(self):
     return self.repo.git.format_patch('-1', 'HEAD')
 
-  def fuzzy_author_search(self, author_name):
-    return process.extract(author_name, self.get_author_list, limit=3)
+  def fuzzy_author_search(self, author_name, limit=3):
+    return process.extract(author_name, self.get_author_list, limit=limit)
 
   def _relative_to_absolute_path(self, path):
     return os.path.join(os.getcwd(), path)

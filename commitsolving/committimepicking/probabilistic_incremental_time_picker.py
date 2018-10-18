@@ -2,12 +2,12 @@ from math import floor
 
 from lazy import lazy
 
-from commitsolving.timepicking.commit_time_picker import CommitTimePicker
+from commitsolving.committimepicking.commit_time_picker import CommitTimePicker
 
 
-class ProbabilisticIncrementalCommitTimePicker(CommitTimePicker):
-  def __init__(self, commit_time_distribution):
-    self.offset_distribution = commit_time_distribution
+class ProbabilisticIncrementalTimePicker(CommitTimePicker):
+  def __init__(self, commit_offset_distribution):
+    self.offset_distribution = commit_offset_distribution
 
   def pick_commit_date(self, author_date):
     commit_offset = next(self.commit_offsets)
@@ -16,15 +16,15 @@ class ProbabilisticIncrementalCommitTimePicker(CommitTimePicker):
 
   @lazy
   def commit_offsets(self):
-    return self._commit_offsets()
+    return self._create_commit_offsets_generator()
 
-  def _commit_offsets(self):
+  def _create_commit_offsets_generator(self):
     distribution = self.offset_distribution.distribution
 
     buckets = distribution.distribution_values
     max_bucket_index = max(buckets)
 
-    next_commit_offset = distribution.min_commit_offset - 1
+    next_commit_offset = distribution.min_value - 1
 
     while True:
       next_commit_offset += 1

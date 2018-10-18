@@ -2,22 +2,21 @@ import hazelcast
 
 
 class HazelcastClient:
-  def __init__(self, commit_id):
-    self.client = self._configure_cluster()
-    self.commit_id = commit_id
+  def __init__(self, server_list):
+    self.client = self._configure_client(server_list)
 
-  @property
-  def solution_attempt_set(self):
-    return self.client.get_set(f"{self.commit_id}:solution_attempt_set")
+  def get_set(self, namespace, set_name):
+    return self.client.get_set(f"{namespace}:{set_name}")
 
-  def _configure_cluster(self):
+  @staticmethod
+  def _configure_client(server_list):
     config = hazelcast.ClientConfig()
-    print("Cluster name: {}".format(config.group_config.name))
+    print("Hazelcast Cluster name: {}".format(config.group_config.name))
 
-    config.network_config.addresses.append("127.0.0.1:5701")
-    config.network_config.addresses.append("127.0.0.1:5702")
+    for peer in server_list:
+      config.network_config.addresses.append(peer)
 
     client = hazelcast.HazelcastClient(config)
-    print("Client is {}".format(client.lifecycle.state))
+    print("Hazelcast Client is {}".format(client.lifecycle.state))
 
     return client

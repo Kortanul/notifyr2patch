@@ -1,8 +1,8 @@
 import re
-import dateutil.parser
-
-from bs4 import BeautifulSoup
 from datetime import datetime
+
+import dateutil.parser
+from bs4 import BeautifulSoup
 
 
 class CommitHeader:
