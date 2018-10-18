@@ -2,13 +2,11 @@ from commitsolving.commit_solution import CommitSolution
 
 
 class CommitSolver:
-  def __init__(self, git_client, base_ref, notification,
-               author_distribution_factory, committer_distribution_factory,
+  def __init__(self, git_client, author_distribution_factory,
+               committer_distribution_factory,
                timezone_distribution_factory,
                time_picker_factory, solution_storage, temp_path):
     self.git_client = git_client
-    self.base_ref = base_ref
-    self.notification = notification
 
     self.author_distribution_factory = author_distribution_factory
     self.committer_distribution_factory = committer_distribution_factory
@@ -18,12 +16,15 @@ class CommitSolver:
     self.solution_storage = solution_storage
     self.temp_path = temp_path
 
-  def run(self):
-    for notification_commit in self.notification.commits:
-      return self.solve_commit(notification_commit)
+  def solve_all(self, base_ref, notification):
+    for notification_commit in notification.commits:
+      # NOTE: Each commit forms the base ref for the next commit in the
+      # notification
+      base_ref = self.solve_commit(base_ref, notification, notification_commit)
 
-  def solve_commit(self, notification_commit):
-    author_distribution = self._get_author_distribution(notification_commit)
+  def solve_commit(self, base_ref, notification, notification_commit):
+    author_distribution = \
+      self._get_author_distribution(notification, notification_commit)
 
     target_commit_id = notification_commit.id
     attempt_index = 1
@@ -34,13 +35,15 @@ class CommitSolver:
 
       if self.solution_storage.has_seen(target_commit_id, commit_solution):
         print(".", end='', flush=True)
-      elif self.is_correct_solution(target_commit_id, attempt_index,
+      elif self.is_correct_solution(base_ref, target_commit_id, attempt_index,
                                     commit_solution):
         break
       else:
         attempt_index += 1
 
         self.solution_storage.mark_seen(target_commit_id, commit_solution)
+
+    return target_commit_id
 
   def pick_solution(self, author_distribution, notification_commit):
     author_name = author_distribution.pick_author()
@@ -74,7 +77,7 @@ class CommitSolver:
 
     return commit_solution
 
-  def is_correct_solution(self, target_commit_id, attempt_index,
+  def is_correct_solution(self, base_ref, target_commit_id, attempt_index,
                           commit_solution):
     print('')
     print(f"Attempt #{attempt_index} - Trying:")
@@ -82,7 +85,7 @@ class CommitSolver:
     commit_solution.print_inputs()
 
     current_commit_id = \
-      commit_solution.apply_to(self.git_client, self.base_ref, self.temp_path)
+      commit_solution.apply_to(self.git_client, base_ref, self.temp_path)
 
     attempted_solutions = \
       self.solution_storage.get_solution_set_size(target_commit_id)
@@ -99,8 +102,8 @@ class CommitSolver:
     else:
       return False
 
-  def _get_author_distribution(self, notification_commit):
-    author_name_pool = [self.notification.pusher, notification_commit.author]
+  def _get_author_distribution(self, notification, notification_commit):
+    author_name_pool = [notification.pusher, notification_commit.author]
 
     distribution = \
       self.author_distribution_factory.get_distribution_for(author_name_pool)

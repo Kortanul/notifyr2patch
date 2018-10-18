@@ -49,8 +49,6 @@ def run_solver():
   solver = \
     CommitSolver(
       git_client,
-      base_ref,
-      notification,
       author_distribution_factory,
       committer_distribution_factory,
       timezone_distribution_factory,
@@ -59,7 +57,7 @@ def run_solver():
       temp_path
     )
 
-  solver.run()
+  solver.solve_all(base_ref, notification)
 
 
 def parse_and_validate_args():
