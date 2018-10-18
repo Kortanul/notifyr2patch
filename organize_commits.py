@@ -12,7 +12,7 @@ def run_solver():
   organizer = \
     CommitOrganizer(git_client, args.source_folder, args.destination_folder)
 
-  organizer.run()
+  organizer.organize()
 
 
 def parse_and_validate_args():

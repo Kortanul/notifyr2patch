@@ -11,7 +11,7 @@ class CommitOrganizer:
     self.src_folder_path = self.normalize_path(src_folder_path)
     self.dest_folder_path = self.normalize_path(dest_folder_path)
 
-  def run(self):
+  def organize(self):
     self.create_path_recursively(self.dest_folder_path)
 
     src_file_glob = f"{self.src_folder_path}/**/*.html"
