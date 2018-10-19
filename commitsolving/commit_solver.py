@@ -88,7 +88,7 @@ class CommitSolver:
       commit_solution.apply_to(self.git_client, base_ref, self.temp_path)
 
     attempted_solutions = \
-      self.solution_storage.get_solution_set_size(target_commit_id)
+      self.solution_storage.get_solution_set_size_for(target_commit_id)
 
     print(f"Target: {target_commit_id}")
     print(f"Current: {current_commit_id}")

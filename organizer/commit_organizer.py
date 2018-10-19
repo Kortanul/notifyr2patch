@@ -1,14 +1,12 @@
 import glob
 import os
 
-from decorators.gitpatch.patch_writer import PatchWriter
 from parsedmodels.notifyr_notification import NotifyrNotification
 
 
 class CommitOrganizer:
-  def __init__(self, git_client, src_folder_path, dest_folder_path):
-    self.git_client = git_client
-    self.src_folder_path = self.normalize_path(src_folder_path)
+  def __init__(self, src_path_pattern, dest_folder_path):
+    self.src_folder_path = self.normalize_path(src_path_pattern)
     self.dest_folder_path = self.normalize_path(dest_folder_path)
 
   def organize(self):
@@ -41,7 +39,6 @@ class CommitOrganizer:
     full_dest_path = f"{dest_parent_folder}/{dest_basename}"
 
     self.save_notification(notification, src_file_path, full_dest_path)
-    # self.save_patches(notification, src_file_path, full_dest_path)
 
   def save_notification(self, notification, src_file_path, full_dest_path):
     full_html_path = f"{full_dest_path}.html"
@@ -51,26 +48,7 @@ class CommitOrganizer:
 
       html_file.write(str(notification.html_content))
 
-  def save_patches(self, notification, src_file_path, full_dest_path):
-    for commit in notification.commits:
-      full_patch_path = f"{full_dest_path}.{commit.id}.patch"
-      author_name = self.determine_author(commit)
-
-      print(f"`{src_file_path}` -> `{full_patch_path}`")
-      PatchWriter.write(commit, author_name, full_patch_path)
-
-  def determine_author(self, commit):
-    rough_author = commit.author
-
-    candidates = self.git_client.fuzzy_author_search(rough_author)
-
-    if len(candidates) == 0:
-      raise RuntimeError(f"Cannot identify commit author: {rough_author}")
-    else:
-      return candidates[0]
-
-  @staticmethod
-  def get_dest_folder_path(dest_folder_path, notification):
+  def get_dest_folder_path(self, dest_folder_path, notification):
     project_name = notification.project_name
     branch_name = notification.branch_name
 

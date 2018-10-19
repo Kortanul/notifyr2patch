@@ -6,10 +6,20 @@ class HazelcastStorage(SolutionStorage):
     self.client = hazelcast_client
     self.cached_sets = {}
 
-  def get_solution_set_size(self, commit_id):
+  def get_all_solutions_for(self, commit_id):
+    attempt_set = self._commit_solution_set_for(commit_id)
+
+    return attempt_set.get_all().result()
+
+  def get_solution_set_size_for(self, commit_id):
     attempt_set = self._commit_solution_set_for(commit_id)
 
     return attempt_set.size().result()
+
+  def clear_solution_set_for(self, commit_id):
+    attempt_set = self._commit_solution_set_for(commit_id)
+
+    attempt_set.clear().result()
 
   def has_seen(self, commit_id, commit_solution):
     attempt_set = self._commit_solution_set_for(commit_id)

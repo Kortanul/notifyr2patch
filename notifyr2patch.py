@@ -166,7 +166,7 @@ def parse_and_validate_args():
   parser.add_argument(
     '-p',
     '--temp-path',
-    help='when hash solving: indicates the path where temporary files should '
+    help='when hash solving: indicate the path where temporary files should '
          'be written (default: system temp path; use a RAM disk for optimal '
          'performance)'
   )
