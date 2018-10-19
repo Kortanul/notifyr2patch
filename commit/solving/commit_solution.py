@@ -6,6 +6,7 @@ from lazy import lazy
 from decorators.gitpatch.patch_writer import PatchWriter
 
 TEMP_PATCH_FILENAME = "temp.patch"
+FAILED_PATCH_FILENAME = "./failed.patch"
 
 
 class CommitSolution:
@@ -38,11 +39,21 @@ class CommitSolution:
         author_date=self.author_date
       )
 
-      git_client.apply_mailbox_patch(
-        tmp_patch_filename,
-        committer=self.committer_name,
-        commit_date=self.commit_date,
-      )
+      try:
+        git_client.apply_mailbox_patch(
+          tmp_patch_filename,
+          committer=self.committer_name,
+          commit_date=self.commit_date,
+        )
+      except Exception:
+        PatchWriter.write(
+          self.notification_commit,
+          self.author_name,
+          FAILED_PATCH_FILENAME,
+          author_date=self.author_date
+        )
+
+        raise
 
     new_commit_id = git_client.head_revision
 
