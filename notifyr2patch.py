@@ -38,11 +38,11 @@ def run_solver():
   notification = NotifyrNotification(notification_file_path)
 
   author_distribution_factory = AuthorDistributionFactory(git_client)
+  timezone_distribution_factory = AuthorTimezoneDistributionFactory(git_client)
 
   committer_distribution_factory = \
     AuthorCommitterDistributionFactory(git_client)
 
-  timezone_distribution_factory = AuthorTimezoneDistributionFactory(git_client)
   time_picker_factory = get_time_picker_factory(args, git_client)
   solution_storage = get_solution_storage(args)
 
