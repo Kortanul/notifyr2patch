@@ -1,7 +1,6 @@
 import argparse
 
-from commitsolving.hazelcast_client import HazelcastClient
-from commitsolving.storage.hazelcast_storage import HazelcastStorage
+from util.hazelcast_utils import HazelcastUtils
 
 
 def print_set():
@@ -41,11 +40,7 @@ def parse_and_validate_args():
 
 
 def get_hazelcast_storage(args):
-  server_list = args.hazelcast_server
-  client = HazelcastClient(server_list)
-  hazelcast_storage = HazelcastStorage(client)
-
-  return hazelcast_storage
+  return HazelcastUtils.create_hazelcast_storage(args.hazelcast_server)
 
 
 print_set()

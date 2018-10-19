@@ -1,21 +1,21 @@
 import glob
-import os
 
 from parsedmodels.notifyr_notification import NotifyrNotification
+from util.path_utils import PathUtils
 
 
 class CommitOrganizer:
   def __init__(self, src_path_pattern, dest_folder_path):
-    self.src_folder_path = self.normalize_path(src_path_pattern)
-    self.dest_folder_path = self.normalize_path(dest_folder_path)
+    self.src_folder_path = PathUtils.normalize_path(src_path_pattern)
+    self.dest_folder_path = PathUtils.normalize_path(dest_folder_path)
 
   def organize(self):
-    self.create_path_recursively(self.dest_folder_path)
+    PathUtils.create_path_recursively(self.dest_folder_path)
 
     src_file_glob = f"{self.src_folder_path}/**/*.html"
 
     for src_file_path in glob.iglob(src_file_glob, recursive=True):
-      src_file_path = self.normalize_path(src_file_path)
+      src_file_path = PathUtils.normalize_path(src_file_path)
 
       try:
         notification = NotifyrNotification(src_file_path)
@@ -33,7 +33,7 @@ class CommitOrganizer:
     dest_parent_folder = \
       self.get_dest_folder_path(self.dest_folder_path, notification)
 
-    self.create_path_recursively(dest_parent_folder)
+    PathUtils.create_path_recursively(dest_parent_folder)
 
     dest_basename = self.get_dest_basename(notification, src_file_path)
     full_dest_path = f"{dest_parent_folder}/{dest_basename}"
@@ -72,23 +72,10 @@ class CommitOrganizer:
     return dest_basename
 
   @staticmethod
-  def normalize_path(path):
-    return path.replace("\\","/")
+  def extract_message_id_from_path(file_path):
+    return PathUtils.extract_path_component(file_path, -1)
 
   @staticmethod
-  def create_path_recursively(path):
-    if not os.path.exists(path):
-      os.makedirs(path)
+  def extract_date_from_path(file_path):
+    return PathUtils.extract_path_component(file_path, -2)
 
-  def extract_message_id_from_path(self, file_path):
-    return self.extract_path_component(file_path, -1)
-
-  def extract_date_from_path(self, file_path):
-    return self.extract_path_component(file_path, -2)
-
-  @staticmethod
-  def extract_path_component(file_path, offset):
-    dir_name = os.path.dirname(file_path)
-    parts = dir_name.split('/')
-
-    return parts[offset]

@@ -19,11 +19,10 @@ from commitsolving.distributions.factories.author_timezone_distribution_factory 
   import AuthorTimezoneDistributionFactory
 from commitsolving.distributions.factories.global_commit_offset_distribution_factory \
   import GlobalCommitOffsetDistributionFactory
-from commitsolving.hazelcast_client import HazelcastClient
-from commitsolving.storage.hazelcast_storage import HazelcastStorage
 from commitsolving.storage.native_set_storage import NativeSetStorage
 from gitclient.git_client import GitClient
 from parsedmodels.notifyr_notification import NotifyrNotification
+from util.hazelcast_utils import HazelcastUtils
 
 
 def run_solver():
@@ -304,11 +303,7 @@ def get_solution_storage(args):
 
 
 def get_hazelcast_storage(args):
-  server_list = args.hazelcast_server
-  client = HazelcastClient(server_list)
-  hazelcast_storage = HazelcastStorage(client)
-
-  return hazelcast_storage
+  return HazelcastUtils.create_hazelcast_storage(args.hazelcast_server)
 
 
 run_solver()
