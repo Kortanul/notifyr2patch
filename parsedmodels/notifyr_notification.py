@@ -42,10 +42,14 @@ class NotifyrNotification:
     changes_rows = \
       [self._changes_row_for(commit_header) for commit_header in commit_headers]
 
-    self.commits = [
+    commits = [
       Commit(commit_header, changes_row)
       for commit_header, changes_row in zip(commit_headers, changes_rows)
     ]
+
+    commits_by_date = sorted(commits, key=lambda commit: commit.date)
+
+    self.commits = commits_by_date
 
   def _commit_header_rows(self, commit_table):
     if commit_table:
