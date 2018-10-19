@@ -23,9 +23,10 @@ class CommitSolution:
   def offset_value(self):
     return self.offset.utcoffset(None)
 
-  def apply_to(self, git_client, base_ref, temp_path):
-    git_client.checkout_detached(base_ref)
-    git_client.abort_mailbox_patch()
+  def apply_to(self, git_client, base_ref=None, temp_path=None):
+    if base_ref is not None:
+      git_client.checkout_detached(base_ref)
+      git_client.abort_mailbox_patch()
 
     with tempfile.TemporaryDirectory(dir=temp_path) as tmp_dir:
       tmp_patch_filename = path.join(tmp_dir, TEMP_PATCH_FILENAME)
@@ -43,9 +44,9 @@ class CommitSolution:
         commit_date=self.commit_date,
       )
 
-    resulting_commit_id = git_client.head_revision
+    new_commit_id = git_client.head_revision
 
-    return resulting_commit_id
+    return new_commit_id
 
   def print_inputs(self):
     print(f" - Author: {self.author_name}")
