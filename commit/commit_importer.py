@@ -13,7 +13,7 @@ class CommitImporter:
     self.author_distribution_factory = author_distribution_factory
     self.timezone_distribution_factory = timezone_distribution_factory
 
-  def import_notification_files(self, src_path_pattern):
+  def import_notification_files(self, src_path_pattern, target_commit=None):
     normalized_src_path = PathUtils.normalize_path(src_path_pattern)
 
     src_file_glob = f"{normalized_src_path}/**/*.html"
@@ -23,11 +23,12 @@ class CommitImporter:
 
       notification = NotifyrNotification(src_file_path)
 
-      self.import_notification(notification)
+      self.import_notification(notification, target_commit)
 
-  def import_notification(self, notification):
+  def import_notification(self, notification, target_commit=None):
     for notification_commit in notification.commits:
-      self.import_commit(notification, notification_commit)
+      if target_commit is None or target_commit == notification_commit.id:
+        self.import_commit(notification, notification_commit)
 
   def import_commit(self, notification, notification_commit):
     commit_solution = \

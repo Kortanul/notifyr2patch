@@ -13,6 +13,7 @@ def bulk_import_commits():
 
   source_pattern = args.source_pattern
   repo_path = args.git_repo
+  target_commit = args.target_commit
 
   git_client = GitClient(repo_path)
 
@@ -24,7 +25,7 @@ def bulk_import_commits():
       git_client, author_distribution_factory, timezone_distribution_factory
     )
 
-  importer.import_notification_files(source_pattern)
+  importer.import_notification_files(source_pattern, target_commit)
 
 
 def parse_and_validate_args():
@@ -42,6 +43,14 @@ def parse_and_validate_args():
     help='set the path to a local copy of the repo into which commits will be '
          'imported.',
     required=True
+  )
+
+  parser.add_argument(
+    '-C',
+    '--target-commit',
+    help='specify exactly which commit should be imported out of those in the '
+         'notifications in the source path.',
+    default=None
   )
 
   args = parser.parse_args()
