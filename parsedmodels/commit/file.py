@@ -6,7 +6,11 @@ class File:
   def is_deleted(self):
     raise NotImplementedError()
 
-  def _parse_row(self, row, filename_element_selector, filename_pattern):
+  @property
+  def is_new(self):
+    raise NotImplementedError()
+
+  def _parse_header_row(self, row, filename_element_selector, filename_pattern):
     deletion_element = row.select_one(filename_element_selector)
 
     if deletion_element is not None:

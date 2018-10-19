@@ -12,13 +12,17 @@ class DeletedFile(File):
       r'[^<]+</a>'
     )
 
-  def __init__(self, file_deletion_row):
+  def __init__(self, file_header_row):
     super().__init__()
 
-    self._parse_row(
-      file_deletion_row, self.FILENAME_ELEMENT_SELECTOR, self.FILENAME_PATTERN
+    self._parse_header_row(
+      file_header_row, self.FILENAME_ELEMENT_SELECTOR, self.FILENAME_PATTERN
     )
 
   @property
   def is_deleted(self):
     return True
+
+  @property
+  def is_new(self):
+    return False

@@ -12,12 +12,21 @@ class LineMetrics:
 
   @property
   def total_line_count(self):
-    return self._max_line_number - self._min_line_number + 1
+    if self.line_numbers:
+      return self._max_line_number - self._min_line_number + 1
+    else:
+      return 0
 
   @property
   def _min_line_number(self):
-    return min(self.line_numbers)
+    if self.line_numbers:
+      return min(self.line_numbers)
+    else:
+      return 0
 
   @property
   def _max_line_number(self):
-    return max(self.line_numbers)
+    if self.line_numbers:
+      return max(self.line_numbers)
+    else:
+      return 0

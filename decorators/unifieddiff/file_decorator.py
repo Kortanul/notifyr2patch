@@ -48,13 +48,15 @@ class FileDecorator:
 
   def __str__(self):
     if self.commit_file.is_deleted:
-      lines = self._deleted_lines()
+      lines = self._lines_for_deleted_file()
+    elif self.commit_file.is_new:
+      lines = self._lines_for_new_file()
     else:
-      lines = self._regular_lines()
+      lines = self._lines_for_regular_file()
 
     return '\n'.join(lines)
 
-  def _regular_lines(self):
+  def _lines_for_regular_file(self):
     hunk_decorators = \
       [FileHunkDecorator(file_hunk) for file_hunk in self.commit_file.hunks]
 
@@ -66,10 +68,24 @@ class FileDecorator:
 
     return lines
 
-  def _deleted_lines(self):
+  def _lines_for_new_file(self):
+    hunk_decorators = \
+      [FileHunkDecorator(file_hunk) for file_hunk in self.commit_file.hunks]
+
+    lines = [
+      'new file mode 100644',
+      '--- /dev/null',
+      f'+++ b/{self.file_name}',
+      ''.join([str(decorator) for decorator in hunk_decorators])
+    ]
+
+    return lines
+
+  def _lines_for_deleted_file(self):
     lines = [
       f'--- a/{self.file_name}',
-      '+++ dev/null'
+      '+++ /dev/null',
+      ''
     ]
 
     return lines

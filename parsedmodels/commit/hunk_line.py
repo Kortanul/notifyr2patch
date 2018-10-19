@@ -21,6 +21,10 @@ class HunkLine:
 
     self._parse_hunk_line_row(hunk_line_row)
 
+  @property
+  def is_new(self):
+    return self.original_line_number == -1
+
   def _parse_hunk_line_row(self, hunk_line_row):
     self._parse_original_line_number(hunk_line_row)
     self._parse_new_line_number(hunk_line_row)

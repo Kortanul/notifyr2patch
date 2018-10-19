@@ -1,3 +1,5 @@
+from lazy import lazy
+
 from parsedmodels.commit.hunk_line import HunkLine
 
 
@@ -6,6 +8,10 @@ class FileHunk:
     self.lines = []
   
     self._parse_hunk_tables(hunk_tables)
+
+  @lazy
+  def is_new(self):
+    return all(line.is_new for line in self.lines)
 
   def _parse_hunk_tables(self, hunk_tables):
     if hunk_tables is not None:
