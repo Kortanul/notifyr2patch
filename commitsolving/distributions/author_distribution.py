@@ -1,6 +1,7 @@
 import random
 from collections import defaultdict
 from functools import reduce
+from operator import itemgetter
 
 from lazy import lazy
 
@@ -17,6 +18,15 @@ class AuthorDistribution:
   @lazy
   def author_name_weights(self):
     return list(self.distribution.values())
+
+  @lazy
+  def most_frequent_author_name(self):
+    sorted_values = \
+      sorted(self.distribution.items(), key=itemgetter(1), reverse=True)
+
+    first_value = next(iter(sorted_values), (None, None))
+
+    return first_value[0]
 
   @lazy
   def distribution(self):

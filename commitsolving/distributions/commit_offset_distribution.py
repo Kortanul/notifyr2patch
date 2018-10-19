@@ -35,6 +35,10 @@ class CommitOffsetDistribution:
 
     return distribution
 
+  @lazy
+  def most_frequent_commit_offset(self):
+    return self.distribution.most_frequent_value
+
   def pick_commit_offset(self):
     commit_offset_range = self.distribution.pick_range()
     commit_offset = random.choice(commit_offset_range)

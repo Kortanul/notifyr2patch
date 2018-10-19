@@ -1,6 +1,7 @@
 import random
 from collections import defaultdict
 from functools import reduce
+from operator import itemgetter
 
 from lazy import lazy
 
@@ -21,6 +22,19 @@ class CommitterDistribution:
   @lazy
   def committer_name_weights(self):
     return list(self.committer_frequencies.values())
+
+  @lazy
+  def most_frequent_committer_name(self):
+    sorted_values = \
+      sorted(
+        self.committer_frequencies.items(),
+        key=itemgetter(1),
+        reverse=True
+      )
+
+    first_value = next(iter(sorted_values), (None, None))
+
+    return first_value[0]
 
   @lazy
   def committer_frequencies(self):

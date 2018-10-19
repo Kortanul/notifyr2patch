@@ -1,4 +1,5 @@
 import random
+from operator import itemgetter
 
 import numpy
 from lazy import lazy
@@ -51,6 +52,15 @@ class ValueDistribution:
   @lazy
   def distribution_weights(self):
     return list(self.distribution.values())
+
+  @lazy
+  def most_frequent_value(self):
+    sorted_values = \
+      sorted(self.distribution.items(), key=itemgetter(1), reverse=True)
+
+    first_value = next(iter(sorted_values), (None, None))
+
+    return first_value[0]
 
   @lazy
   def distribution(self):

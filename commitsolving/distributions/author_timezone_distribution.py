@@ -36,6 +36,10 @@ class AuthorTimezoneDistribution:
 
     return distribution
 
+  @lazy
+  def most_frequent_timezone_offset(self):
+    return self.distribution.most_frequent_value
+
   def pick_timezone_offset(self):
     offset_value = self.distribution.pick_value()
 
