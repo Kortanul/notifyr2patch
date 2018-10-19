@@ -1,4 +1,4 @@
-from commitsolving.distributions.global_commit_offset_distribution import \
+from commit.solving.distributions.global_commit_offset_distribution import \
   GlobalCommitOffsetDistribution
 
 

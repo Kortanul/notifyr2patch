@@ -1,5 +1,5 @@
-from commitsolving.hazelcast_client import HazelcastClient
-from commitsolving.storage.hazelcast_storage import HazelcastStorage
+from commit.solving.hazelcast_client import HazelcastClient
+from commit.solving.storage.hazelcast_storage import HazelcastStorage
 
 
 class HazelcastUtils:

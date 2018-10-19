@@ -1,5 +1,5 @@
-from commitsolving.committimepicking.simple_incremental_time_picker \
-  import SimpleIncrementalTimePicker
+from commit.solving.timepicking.simple_incremental_time_picker import \
+  SimpleIncrementalTimePicker
 
 
 class SimpleIncrementalTimePickerFactory:

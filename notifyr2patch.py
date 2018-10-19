@@ -2,24 +2,24 @@ import argparse
 import sys
 from datetime import timedelta
 
-from commitsolving.commit_solver import CommitSolver
-from commitsolving.committimepicking.factories.probabilistic_incremental_time_picker_factory \
-  import ProbabilisticIncrementalTimePickerFactory
-from commitsolving.committimepicking.factories.probabilistic_random_time_picker_factory \
-  import ProbabilisticRandomTimePickerFactory
-from commitsolving.committimepicking.factories.simple_incremental_time_picker_factory \
-  import SimpleIncrementalTimePickerFactory
-from commitsolving.distributions.factories.author_commit_offset_distribution_factory \
-  import AuthorCommitOffsetDistributionFactory
-from commitsolving.distributions.factories.author_committer_distribution_factory \
-  import AuthorCommitterDistributionFactory
-from commitsolving.distributions.factories.author_distribution_factory \
-  import AuthorDistributionFactory
-from commitsolving.distributions.factories.author_timezone_distribution_factory \
-  import AuthorTimezoneDistributionFactory
-from commitsolving.distributions.factories.global_commit_offset_distribution_factory \
-  import GlobalCommitOffsetDistributionFactory
-from commitsolving.storage.native_set_storage import NativeSetStorage
+from commit.solving.commit_solver import CommitSolver
+from commit.solving.distributions.factories.author_commit_offset_distribution_factory import \
+  AuthorCommitOffsetDistributionFactory
+from commit.solving.distributions.factories.author_committer_distribution_factory import \
+  AuthorCommitterDistributionFactory
+from commit.solving.distributions.factories.author_distribution_factory import \
+  AuthorDistributionFactory
+from commit.solving.distributions.factories.author_timezone_distribution_factory import \
+  AuthorTimezoneDistributionFactory
+from commit.solving.distributions.factories.global_commit_offset_distribution_factory import \
+  GlobalCommitOffsetDistributionFactory
+from commit.solving.storage.native_set_storage import NativeSetStorage
+from commit.solving.timepicking.factories.probabilistic_incremental_time_picker_factory import \
+  ProbabilisticIncrementalTimePickerFactory
+from commit.solving.timepicking.factories.probabilistic_random_time_picker_factory import \
+  ProbabilisticRandomTimePickerFactory
+from commit.solving.timepicking.factories.simple_incremental_time_picker_factory import \
+  SimpleIncrementalTimePickerFactory
 from gitclient.git_client import GitClient
 from parsedmodels.notifyr_notification import NotifyrNotification
 from util.hazelcast_utils import HazelcastUtils

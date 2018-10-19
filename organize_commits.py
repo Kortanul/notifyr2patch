@@ -1,6 +1,6 @@
 import argparse
 
-from organizer.commit_organizer import CommitOrganizer
+from commit.commit_organizer import CommitOrganizer
 
 
 def organize_commits():

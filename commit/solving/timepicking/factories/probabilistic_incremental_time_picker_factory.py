@@ -1,7 +1,7 @@
-from commitsolving.committimepicking.factories.probabilistic_time_picker_factory import \
+from commit.solving.timepicking.factories.probabilistic_time_picker_factory import \
   ProbabilisticTimePickerFactory
-from commitsolving.committimepicking.probabilistic_incremental_time_picker \
-  import ProbabilisticIncrementalTimePicker
+from commit.solving.timepicking.probabilistic_incremental_time_picker import \
+  ProbabilisticIncrementalTimePicker
 
 
 class ProbabilisticIncrementalTimePickerFactory(ProbabilisticTimePickerFactory):

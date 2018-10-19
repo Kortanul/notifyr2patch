@@ -3,7 +3,7 @@ import random
 import numpy
 from lazy import lazy
 
-from commitsolving.distributions.value_distribution import ValueDistribution
+from commit.solving.distributions.value_distribution import ValueDistribution
 
 
 class CommitOffsetDistribution:

@@ -1,4 +1,4 @@
-from commitsolving.distributions.commit_offset_distribution import \
+from commit.solving.distributions.commit_offset_distribution import \
   CommitOffsetDistribution
 
 

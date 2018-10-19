@@ -1,6 +1,6 @@
-from commitsolving.committimepicking.factories.probabilistic_time_picker_factory import \
+from commit.solving.timepicking.factories.probabilistic_time_picker_factory import \
   ProbabilisticTimePickerFactory
-from commitsolving.committimepicking.probabilistic_random_time_picker import \
+from commit.solving.timepicking.probabilistic_random_time_picker import \
   ProbabilisticRandomTimePicker
 
 

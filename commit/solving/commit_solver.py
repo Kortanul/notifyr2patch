@@ -1,4 +1,4 @@
-from commitsolving.commit_solution import CommitSolution
+from commit.solving.commit_solution import CommitSolution
 
 
 class CommitSolver:

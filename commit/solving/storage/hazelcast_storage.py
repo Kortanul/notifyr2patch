@@ -1,30 +1,31 @@
-from commitsolving.storage.solution_storage import SolutionStorage
+from commit.solving.storage.solution_storage import SolutionStorage
 
 
-class NativeSetStorage(SolutionStorage):
-  def __init__(self):
-    self.sets_by_commit = {}
+class HazelcastStorage(SolutionStorage):
+  def __init__(self, hazelcast_client):
+    self.client = hazelcast_client
+    self.cached_sets = {}
 
   def get_all_solutions_for(self, commit_id):
     attempt_set = self._commit_solution_set_for(commit_id)
 
-    return list(attempt_set)
+    return attempt_set.get_all().result()
 
   def get_solution_set_size_for(self, commit_id):
     attempt_set = self._commit_solution_set_for(commit_id)
 
-    return len(attempt_set)
+    return attempt_set.size().result()
 
   def clear_solution_set_for(self, commit_id):
     attempt_set = self._commit_solution_set_for(commit_id)
 
-    attempt_set.clear()
+    attempt_set.clear().result()
 
   def has_seen(self, commit_id, commit_solution):
     attempt_set = self._commit_solution_set_for(commit_id)
     attempt_as_str = str(commit_solution)
 
-    return attempt_as_str in attempt_set
+    return attempt_set.contains(attempt_as_str).result()
 
   def mark_seen(self, commit_id, commit_solution):
     attempt_set = self._commit_solution_set_for(commit_id)
@@ -33,8 +34,9 @@ class NativeSetStorage(SolutionStorage):
     attempt_set.add(attempt_as_str)
 
   def _commit_solution_set_for(self, commit_id):
-    if commit_id not in self.sets_by_commit:
-      self.sets_by_commit[commit_id] = set()
+    if commit_id not in self.cached_sets:
+      self.cached_sets[commit_id] = \
+        self.client.get_set(commit_id, 'commit_solutions')
 
-    return self.sets_by_commit[commit_id]
+    return self.cached_sets[commit_id]
 

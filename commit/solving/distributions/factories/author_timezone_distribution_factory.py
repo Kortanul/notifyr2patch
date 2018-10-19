@@ -1,4 +1,4 @@
-from commitsolving.distributions.author_timezone_distribution import \
+from commit.solving.distributions.author_timezone_distribution import \
   AuthorTimezoneDistribution
 
 

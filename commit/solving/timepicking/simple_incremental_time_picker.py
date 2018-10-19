@@ -1,6 +1,6 @@
 from lazy import lazy
 
-from commitsolving.committimepicking.commit_time_picker import CommitTimePicker
+from commit.solving.timepicking.commit_time_picker import CommitTimePicker
 
 
 class SimpleIncrementalTimePicker(CommitTimePicker):

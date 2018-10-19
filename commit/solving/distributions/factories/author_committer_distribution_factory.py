@@ -1,4 +1,4 @@
-from commitsolving.distributions.committer_distribution import \
+from commit.solving.distributions.committer_distribution import \
   CommitterDistribution
 
 

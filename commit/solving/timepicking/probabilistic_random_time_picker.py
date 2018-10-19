@@ -1,4 +1,4 @@
-from commitsolving.committimepicking.commit_time_picker import CommitTimePicker
+from commit.solving.timepicking.commit_time_picker import CommitTimePicker
 
 
 class ProbabilisticRandomTimePicker(CommitTimePicker):

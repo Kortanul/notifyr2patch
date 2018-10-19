@@ -1,4 +1,4 @@
-from commitsolving.distributions.author_distribution import AuthorDistribution
+from commit.solving.distributions.author_distribution import AuthorDistribution
 
 
 class AuthorDistributionFactory:
