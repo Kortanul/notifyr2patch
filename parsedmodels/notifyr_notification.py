@@ -47,9 +47,10 @@ class NotifyrNotification:
       for commit_header, changes_row in zip(commit_headers, changes_rows)
     ]
 
-    commits_by_date = sorted(commits, key=lambda commit: commit.date)
+    # The lowest commit in the notification is the oldest commit
+    commits_in_merge_order = list(reversed(commits))
 
-    self.commits = commits_by_date
+    self.commits = commits_in_merge_order
 
   def _commit_header_rows(self, commit_table):
     if commit_table:
