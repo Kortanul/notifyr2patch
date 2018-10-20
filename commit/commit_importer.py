@@ -64,7 +64,7 @@ class CommitImporter:
         committer_name=None,
         offset=offset,
         author_date=author_date,
-        commit_date=None
+        commit_date=author_date # "Committer date is author date"
       )
 
     return commit_solution
