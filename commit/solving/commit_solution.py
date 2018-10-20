@@ -36,7 +36,8 @@ class CommitSolution:
         self.notification_commit,
         self.author_name,
         tmp_patch_filename,
-        author_date=self.author_date
+        author_date=self.author_date,
+        repo_base_path=git_client.repo_path
       )
 
       try:
@@ -50,7 +51,8 @@ class CommitSolution:
           self.notification_commit,
           self.author_name,
           FAILED_PATCH_FILENAME,
-          author_date=self.author_date
+          author_date=self.author_date,
+          repo_base_path=git_client.repo_path
         )
 
         raise

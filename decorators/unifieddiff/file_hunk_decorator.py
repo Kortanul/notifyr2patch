@@ -60,7 +60,7 @@ class FileHunkDecorator:
     line_output = \
       '\n'.join([str(decorator) for decorator in self.hunk_line_decorators])
 
-    return hunk_range + line_output + '\n'
+    return hunk_range + line_output
 
   def calculate_line_metrics(self):
     for line in self.file_hunk.lines:

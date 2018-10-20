@@ -9,8 +9,9 @@ class CommitDecorator(UnifiedCommitDecorator):
   GIT_MBOX_DATE_FORMAT = \
     '{d:%a}, {d.day} {d:%b} {d:%Y} {d.hour}:{d.minute:02}:{d.second:02} {d:%z}'
 
-  def __init__(self, commit, author_name=None, author_date=None):
-    super(CommitDecorator, self).__init__(commit)
+  def __init__(self, commit, author_name=None, author_date=None,
+               repo_base_path=None):
+    super(CommitDecorator, self).__init__(commit, src_base_path=repo_base_path)
 
     self._author_name = author_name
     self._author_date = author_date
@@ -46,4 +47,4 @@ class CommitDecorator(UnifiedCommitDecorator):
     return lines_str + super(CommitDecorator, self).__str__()
 
   def _create_file_decorator(self, file):
-    return FileDecorator(file)
+    return FileDecorator(file, src_base_path=self.src_base_path)
