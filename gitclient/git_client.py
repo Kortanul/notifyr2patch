@@ -70,7 +70,7 @@ class GitClient:
     full_patch_path = self._relative_to_absolute_path(filename)
 
     with self.repo.git.custom_environment(**git_environment):
-      return self.repo.git.am(full_patch_path)
+      return self.repo.git.am('--keep-non-patch', full_patch_path)
 
   def abort_mailbox_patch(self):
     try:
