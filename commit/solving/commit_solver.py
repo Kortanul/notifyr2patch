@@ -94,7 +94,7 @@ class CommitSolver:
     print(f"Current: {current_commit_id}")
     print(f"Total Attempted Solutions: {attempted_solutions}")
     print()
-    print()
+    print(flush=True)
 
     if current_commit_id == target_commit_id:
       print("Solution found!")
