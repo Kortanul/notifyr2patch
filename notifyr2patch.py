@@ -123,10 +123,10 @@ def parse_and_validate_args():
   parser.add_argument(
     '-m',
     '--time-range-min',
-    help='indicate the minimum offset (in seconds) the solver should consider '
+    help='indicate the minimum offset (in days) the solver should consider '
          'between author time and commit time '
-         '(default: "0", for 0 seconds after author date)',
-    type=int,
+         '(default: "0", for 0 days after author date)',
+    type=float,
     default=0
   )
 
@@ -136,7 +136,7 @@ def parse_and_validate_args():
     help='indicate the maximum offset (in days) the solver should '
          'consider between author time and commit time '
          '(default: "30", for 30 days after author date)',
-    type=int,
+    type=float,
     default=30
   )
 
